@@ -608,24 +608,21 @@
     }
 
     function loadState() {
+    // Highlighted change here: added _v2
+    const storedPhotos = localStorage.getItem('dayout_crt_photos_v2');
 
-        const storedPhotos =
-            localStorage.getItem('dayout_crt_photos');
-
-        if (storedPhotos) {
-
-            try {
-                state.photos = JSON.parse(storedPhotos);
-            } catch(e) {
-                state.photos = defaultPhotos;
-            }
-
-        } else {
-
+    if (storedPhotos) {
+        try {
+            state.photos = JSON.parse(storedPhotos);
+        } catch(e) {
             state.photos = defaultPhotos;
-            savePhotos();
-
         }
+    } else {
+        state.photos = defaultPhotos;
+        savePhotos();
+    }
+    // ...
+}
 
         const storedUnlock =
             localStorage.getItem('dayout_crt_unlocked');
@@ -636,19 +633,13 @@
     }
 
     function savePhotos() {
-
-        try {
-
-            localStorage.setItem(
-                'dayout_crt_photos',
-                JSON.stringify(state.photos)
-            );
-
-        } catch(e) {
-
-            setTerminalMsg(
-                'STORAGE WARNING: CANNOT PERSIST PHOTO.'
-            );
+    try {
+        // Highlighted change here: added _v2
+        localStorage.setItem('dayout_crt_photos_v2', JSON.stringify(state.photos));
+    } catch(e) {
+        setTerminalMsg('STORAGE WARNING: CANNOT PERSIST PHOTO.');
+    }
+}
 
         }
     }
