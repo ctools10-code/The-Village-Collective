@@ -5,15 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DAY_OUT :: CRT MEMORIES & VLOG REVEAL</title>
 
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Google Fonts: VT323 & Share Tech Mono for CRT Aesthetic -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&family=Caveat:wght@600&display=swap" rel="stylesheet">
 
-    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
@@ -151,9 +148,14 @@
 
         .crt-tab-btn.active-tab {
             background-color: #00ff66;
-            color: #050b05;
+            color: #050b05 !important;
             box-shadow: 0 0 10px rgba(0, 255, 102, 0.8);
             font-weight: bold;
+        }
+
+        .crt-tab-btn.active-tab span,
+        .crt-tab-btn.active-tab i {
+            color: #050b05 !important;
         }
 
         .crt-glass-glare {
@@ -166,11 +168,13 @@
 
 <div class="w-full max-w-6xl mx-auto flex-1 flex flex-col my-auto">
 
-    <!-- MONITOR TOP BEZEL -->
     <div class="bg-[#22252a] rounded-t-3xl border-t-4 border-x-4 border-[#333840] pt-3 pb-2 px-6 flex justify-between items-center shadow-2xl">
+
         <div class="flex items-center gap-2">
             <span class="w-3 h-3 rounded-full bg-red-600 inline-block border border-red-800"></span>
-            <span class="text-[11px] tracking-widest text-stone-400 font-bold uppercase">SONY TRINITRON CRT-95</span>
+            <span class="text-[11px] tracking-widest text-stone-400 font-bold uppercase">
+                SONY TRINITRON CRT-95
+            </span>
         </div>
 
         <div class="text-[10px] tracking-wider text-stone-500 font-mono hidden sm:block">
@@ -178,73 +182,100 @@
         </div>
 
         <div class="flex items-center gap-3">
-            <button id="toggle-sound" class="text-xs text-stone-400 hover:text-[#00ff66] transition flex items-center gap-1" title="Toggle Beep SFX">
+
+            <button id="toggle-sound"
+                class="text-xs text-stone-400 hover:text-[#00ff66] transition flex items-center gap-1"
+                title="Toggle Beep SFX">
+
                 <i class="fa-solid fa-volume-high text-xs" id="sound-icon"></i>
                 <span class="hidden sm:inline">SFX: ON</span>
+
             </button>
 
-            <button id="toggle-scanlines" class="text-xs text-stone-400 hover:text-[#00ff66] transition flex items-center gap-1" title="Toggle Scanlines">
+            <button id="toggle-scanlines"
+                class="text-xs text-stone-400 hover:text-[#00ff66] transition flex items-center gap-1"
+                title="Toggle Scanlines">
+
                 <i class="fa-solid fa-bars text-xs"></i>
                 <span class="hidden sm:inline">SCANLINES</span>
+
             </button>
+
         </div>
     </div>
 
-    <!-- CRT SCREEN -->
-    <div class="relative bg-[#050805] border-4 border-[#1a1d21] rounded-b-2xl p-3 sm:p-6 crt-vignette overflow-hidden flex-1 flex flex-col min-h-[620px] shadow-2xl" id="crt-monitor-screen">
+    <div class="relative bg-[#050805] border-4 border-[#1a1d21] rounded-b-2xl p-3 sm:p-6 crt-vignette overflow-hidden flex-1 flex flex-col min-h-[620px] shadow-2xl"
+        id="crt-monitor-screen">
 
-        <div id="scanline-layer" class="crt-scanlines absolute inset-0 pointer-events-none z-30"></div>
+        <div id="scanline-layer"
+            class="crt-scanlines absolute inset-0 pointer-events-none z-30">
+        </div>
+
         <div class="crt-glass-glare absolute inset-0 pointer-events-none z-30"></div>
 
         <div class="crt-flicker-anim crt-power-on relative z-20 flex-1 flex flex-col justify-between space-y-4">
 
-            <!-- HEADER -->
             <header class="border-b-2 border-[#005522] pb-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+
                 <div>
+
                     <div class="flex items-center gap-2">
+
                         <span class="inline-block w-2.5 h-2.5 bg-[#00ff66] rounded-full animate-ping"></span>
 
                         <h1 class="text-3xl sm:text-4xl font-crt-title tracking-wider text-glow-green text-[#00ff66] leading-none">
                             DAY OUT :: MEMORIES & VLOG REVEAL
                         </h1>
+
                     </div>
 
                     <p class="text-[11px] text-[#00a843] tracking-widest uppercase mt-0.5">
                         SYS_VERSION: 2.86.0 // SIGNAL: STABLE // MODE: RECAP_OS
                     </p>
+
                 </div>
 
                 <div class="text-right self-end sm:self-center bg-[#021408] border border-[#005522] px-3 py-1 rounded">
-                    <span id="crt-live-clock" class="text-xs sm:text-sm font-bold text-[#00ff66] text-glow-green">
+
+                    <span id="crt-live-clock"
+                        class="text-xs sm:text-sm font-bold text-[#00ff66] text-glow-green">
                         00:00:00 UTC
                     </span>
+
                 </div>
+
             </header>
 
-            <!-- TABS -->
             <nav class="grid grid-cols-3 gap-2 bg-[#021006] p-1.5 rounded border border-[#00441b]">
 
-                <button data-tab="vlog" class="crt-tab-btn active-tab py-2 sm:py-2.5 px-2 rounded text-xs sm:text-sm tracking-wider uppercase flex items-center justify-center gap-2 border border-[#00aa44]">
+                <button data-tab="vlog"
+                    class="crt-tab-btn active-tab py-2 sm:py-2.5 px-2 rounded text-xs sm:text-sm tracking-wider uppercase flex items-center justify-center gap-2 border border-[#00aa44]">
+
                     <i class="fa-solid fa-circle-play text-xs"></i>
                     <span>VLOG REVEAL</span>
+
                 </button>
 
-                <button data-tab="photos" class="crt-tab-btn text-[#00aa44] hover:text-[#00ff66] py-2 sm:py-2.5 px-2 rounded text-xs sm:text-sm tracking-wider uppercase flex items-center justify-center gap-2 border border-transparent hover:border-[#00aa44]">
+                <button data-tab="photos"
+                    class="crt-tab-btn text-[#00aa44] hover:text-[#00ff66] py-2 sm:py-2.5 px-2 rounded text-xs sm:text-sm tracking-wider uppercase flex items-center justify-center gap-2 border border-transparent hover:border-[#00aa44]">
+
                     <i class="fa-solid fa-camera-retro text-xs"></i>
                     <span>PHOTOS</span>
+
                 </button>
 
-                <button data-tab="whatsapp" class="crt-tab-btn text-[#00aa44] hover:text-[#00ff66] py-2 sm:py-2.5 px-2 rounded text-xs sm:text-sm tracking-wider uppercase flex items-center justify-center gap-2 border border-transparent hover:border-[#00aa44]">
+                <button data-tab="whatsapp"
+                    class="crt-tab-btn text-[#00aa44] hover:text-[#00ff66] py-2 sm:py-2.5 px-2 rounded text-xs sm:text-sm tracking-wider uppercase flex items-center justify-center gap-2 border border-transparent hover:border-[#00aa44]">
+
                     <i class="fa-brands fa-whatsapp text-xs"></i>
                     <span>WhatsApp</span>
+
                 </button>
 
             </nav>
 
-            <!-- TAB CONTENT -->
             <div class="flex-1 my-2">
 
-                <!-- VLOG -->
                 <section id="tab-vlog" class="tab-content space-y-4">
 
                     <div class="bg-[#021006] border border-[#005522] p-2 rounded-lg relative">
@@ -261,8 +292,8 @@
                                 allowfullscreen>
                             </iframe>
 
-                            <!-- LOCKED OVERLAY -->
-                            <div id="vlog-lock-overlay" class="absolute inset-0 bg-[#020d05]/95 backdrop-blur-sm flex flex-col items-center justify-center p-4 text-center z-20 space-y-3 border-2 border-amber-500/50">
+                            <div id="vlog-lock-overlay"
+                                class="absolute inset-0 bg-[#020d05]/95 backdrop-blur-sm flex flex-col items-center justify-center p-4 text-center z-20 space-y-3 border-2 border-amber-500/50">
 
                                 <div class="w-12 h-12 rounded-full bg-amber-500/20 border border-amber-500 text-amber-400 flex items-center justify-center text-xl box-glow-amber">
                                     <i class="fa-solid fa-lock"></i>
@@ -276,21 +307,25 @@
                                     Vlog content encrypted until premiere countdown ends or manual bypass code is executed.
                                 </p>
 
-                                <button id="btn-unlock-overlay" class="bg-amber-500 hover:bg-amber-400 text-black font-bold px-4 py-2 rounded text-xs uppercase transition tracking-wider">
+                                <button id="btn-unlock-overlay"
+                                    class="bg-amber-500 hover:bg-amber-400 text-black font-bold px-4 py-2 rounded text-xs uppercase transition tracking-wider">
                                     Bypass Signal Encryption
                                 </button>
 
                             </div>
+
                         </div>
+
                     </div>
+
                 </section>
 
-                <!-- PHOTOS -->
                 <section id="tab-photos" class="tab-content hidden space-y-4">
 
                     <div class="bg-[#021408] border border-[#005522] p-3 rounded-lg flex flex-col sm:flex-row items-center justify-between gap-3">
 
                         <div>
+
                             <h2 class="text-xl font-crt-title text-[#00ff66] text-glow-green">
                                 POLAROID_ARCHIVE // SNAPSHOTS
                             </h2>
@@ -298,30 +333,34 @@
                             <p class="text-xs text-[#00aa44]">
                                 Upload trip memories. Images are auto-compressed & saved to browser memory.
                             </p>
+
                         </div>
 
                         <div class="text-xs bg-[#05200c] border border-[#006622] px-3 py-1.5 rounded text-[#00ff66]">
+
                             TOTAL_PHOTOS:
-                            <span id="photo-count" class="font-bold text-amber-400">0</span>
+                            <span id="photo-count" class="font-bold text-amber-400">
+                                0
+                            </span>
+
                         </div>
 
                     </div>
 
-                    <!-- UPLOAD -->
-                    
-
-                    <div id="polaroid-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 pt-2"></div>
+                    <div id="polaroid-grid"
+                        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 pt-2">
+                    </div>
 
                 </section>
 
-                <!-- WHATSAPP -->
                 <section id="tab-whatsapp" class="tab-content hidden space-y-4">
 
                     <div class="max-w-xl mx-auto bg-[#021408] border-2 border-[#00aa44] p-5 sm:p-6 rounded-lg box-glow-green text-center space-y-5">
 
-                        <!-- WhatsApp CRT Emblem -->
                         <div class="w-16 h-16 rounded-2xl bg-[#00220d] border-2 border-[#00ff66] text-[#00ff66] flex items-center justify-center mx-auto text-3xl box-glow-green">
+
                             <i class="fa-brands fa-whatsapp"></i>
+
                         </div>
 
                         <div class="space-y-1">
@@ -340,10 +379,10 @@
 
                         </div>
 
-                        <!-- JOIN WHATSAPP GROUP -->
                         <div class="flex flex-col sm:flex-row gap-3">
 
-                            <button id="btn-join-wa" class="w-full bg-[#00ff66] hover:bg-[#00cc52] text-black font-bold py-3 px-4 rounded text-xs sm:text-sm uppercase tracking-wider transition flex items-center justify-center gap-2 box-glow-green">
+                            <button id="btn-join-wa"
+                                class="w-full bg-[#00ff66] hover:bg-[#00cc52] text-black font-bold py-3 px-4 rounded text-xs sm:text-sm uppercase tracking-wider transition flex items-center justify-center gap-2 box-glow-green">
 
                                 <i class="fa-brands fa-whatsapp text-base"></i>
 
@@ -355,14 +394,10 @@
 
                     </div>
 
-                    <!-- GITHUB PAGES HOSTING GUIDE -->
-                    
-
                 </section>
 
             </div>
 
-            <!-- FOOTER -->
             <footer class="border-t border-[#00441b] pt-2 flex flex-col sm:flex-row justify-between items-center text-[10px] text-[#00a843] gap-1">
 
                 <div>
@@ -370,8 +405,11 @@
                     <span>MEMORY: OPTIMAL</span>
                 </div>
 
-                <div id="crt-terminal-msg" class="text-amber-400 font-bold truncate max-w-xs sm:max-w-none">
+                <div id="crt-terminal-msg"
+                    class="text-amber-400 font-bold truncate max-w-xs sm:max-w-none">
+
                     &gt; SYSTEM READY. SELECT A TAB TO EXPLORE...
+
                 </div>
 
             </footer>
@@ -379,28 +417,36 @@
         </div>
     </div>
 
-    <!-- BOTTOM PANEL -->
     <div class="bg-[#1c1f24] rounded-b-3xl border-b-4 border-x-4 border-[#333840] p-4 flex justify-between items-center shadow-2xl">
 
         <div class="flex gap-1.5">
+
             <span class="w-1.5 h-6 bg-[#121417] rounded-sm"></span>
             <span class="w-1.5 h-6 bg-[#121417] rounded-sm"></span>
             <span class="w-1.5 h-6 bg-[#121417] rounded-sm"></span>
             <span class="w-1.5 h-6 bg-[#121417] rounded-sm"></span>
+
         </div>
 
         <div class="flex items-center gap-3">
 
             <div class="flex items-center gap-2">
+
                 <span class="text-[10px] text-stone-400 font-bold tracking-wider uppercase">
                     POWER
                 </span>
 
-                <span id="power-led" class="w-3 h-3 rounded-full bg-[#00ff66] box-glow-green inline-block"></span>
+                <span id="power-led"
+                    class="w-3 h-3 rounded-full bg-[#00ff66] box-glow-green inline-block">
+                </span>
+
             </div>
 
-            <button id="btn-crt-power" class="bg-[#2a2e36] hover:bg-[#383d47] active:bg-[#1a1d22] border-2 border-[#454b57] text-stone-300 w-10 h-10 rounded-full flex items-center justify-center transition shadow-inner">
+            <button id="btn-crt-power"
+                class="bg-[#2a2e36] hover:bg-[#383d47] active:bg-[#1a1d22] border-2 border-[#454b57] text-stone-300 w-10 h-10 rounded-full flex items-center justify-center transition shadow-inner">
+
                 <i class="fa-solid fa-power-off text-sm"></i>
+
             </button>
 
         </div>
@@ -409,13 +455,16 @@
 
 </div>
 
-<!-- LIGHTBOX -->
-<div id="lightbox-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4">
+<div id="lightbox-modal"
+    class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4">
 
     <div class="bg-[#051208] border-2 border-[#00ff66] rounded-lg max-w-md w-full p-4 space-y-4 relative box-glow-green">
 
-        <button id="close-lightbox" class="absolute top-3 right-3 text-[#00ff66] hover:text-amber-400 text-lg w-8 h-8 rounded bg-[#02200c] border border-[#006622] flex items-center justify-center">
+        <button id="close-lightbox"
+            class="absolute top-3 right-3 text-[#00ff66] hover:text-amber-400 text-lg w-8 h-8 rounded bg-[#02200c] border border-[#006622] flex items-center justify-center">
+
             <i class="fa-solid fa-xmark"></i>
+
         </button>
 
         <h3 class="text-lg font-crt-title text-[#00ff66] text-glow-green">
@@ -425,7 +474,12 @@
         <div class="bg-white p-3 pt-4 rounded shadow-2xl space-y-2 border border-stone-300">
 
             <div class="aspect-square bg-stone-900 rounded overflow-hidden">
-                <img id="lb-img" src="" alt="Polaroid inspect view" class="w-full h-full object-cover">
+
+                <img id="lb-img"
+                    src=""
+                    alt="Polaroid inspect view"
+                    class="w-full h-full object-cover">
+
             </div>
 
             <div class="text-center pt-1">
@@ -437,7 +491,8 @@
                     placeholder="Enter photo caption..."
                 >
 
-                <p id="lb-date" class="text-[10px] text-stone-500 font-mono uppercase mt-1">
+                <p id="lb-date"
+                    class="text-[10px] text-stone-500 font-mono uppercase mt-1">
                     2026-09-18
                 </p>
 
@@ -447,17 +502,20 @@
 
         <div class="flex items-center justify-between gap-2 pt-1 text-xs">
 
-            <button id="btn-save-caption" class="bg-[#005522] hover:bg-[#008837] text-[#00ff66] px-3 py-2 rounded font-bold uppercase border border-[#00aa44]">
+            <button id="btn-save-caption"
+                class="bg-[#005522] hover:bg-[#008837] text-[#00ff66] px-3 py-2 rounded font-bold uppercase border border-[#00aa44]">
                 SAVE CAPTION
             </button>
 
             <div class="flex gap-2">
 
-                <button id="btn-download-photo" class="bg-[#05200c] hover:bg-[#003311] text-[#00ff66] border border-[#006622] px-3 py-2 rounded font-bold uppercase">
+                <button id="btn-download-photo"
+                    class="bg-[#05200c] hover:bg-[#003311] text-[#00ff66] border border-[#006622] px-3 py-2 rounded font-bold uppercase">
                     DOWNLOAD
                 </button>
 
-                <button id="btn-delete-photo" class="bg-red-950 hover:bg-red-900 text-red-400 border border-red-700 px-3 py-2 rounded font-bold uppercase">
+                <button id="btn-delete-photo"
+                    class="bg-red-950 hover:bg-red-900 text-red-400 border border-red-700 px-3 py-2 rounded font-bold uppercase">
                     DELETE
                 </button>
 
@@ -468,32 +526,46 @@
     </div>
 </div>
 
-<!-- JAVASCRIPT -->
 <script>
+
+    /*
+    ============================================================
+    EDIT YOUR PHOTO CAPTIONS HERE
+    ============================================================
+
+    Change ONLY the caption text.
+
+    Example:
+
+    caption: 'OUR DAY OUT'
+
+    Each photo has its OWN caption.
+    ============================================================
+    */
 
     const defaultPhotos = [
         {
             id: 'crt-1',
             src: 'assets/photos/IMG_01.jpeg',
-            caption: '',
+            caption: 'WEAREONE',
             date: '2026-09-18'
         },
         {
             id: 'crt-2',
             src: 'assets/photos/IMG_02.jpeg',
-            caption: '',
+            caption: 'SUNSET',
             date: '2026-09-18'
         },
         {
             id: 'crt-3',
             src: 'assets/photos/IMG_03.jpeg',
-            caption: '',
+            caption: 'WEED',
             date: '2026-09-18'
         },
         {
             id: 'crt-4',
             src: 'assets/photos/IMG_04.jpg',
-            caption: '',
+            caption: 'Sculpt',
             date: '2026-09-18'
         }
     ];
@@ -508,395 +580,1015 @@
         screenPowerOn: true
     };
 
-    // YOUR WHATSAPP GROUP LINK
-    const whatsappGroupLink = 'https://chat.whatsapp.com/BWuMp1kiVTD7Mec6IwCpjf';
+    const whatsappGroupLink =
+        'https://chat.whatsapp.com/BWuMp1kiVTD7Mec6IwCpjf';
 
     function playCRTBeep(freq = 800, duration = 0.05) {
+
         if (!state.soundEnabled) return;
+
         try {
-            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+            const audioCtx =
+                new (window.AudioContext || window.webkitAudioContext)();
+
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
 
             osc.type = 'square';
-            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-            gain.gain.setValueAtTime(0.03, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+
+            osc.frequency.setValueAtTime(
+                freq,
+                audioCtx.currentTime
+            );
+
+            gain.gain.setValueAtTime(
+                0.03,
+                audioCtx.currentTime
+            );
+
+            gain.gain.exponentialRampToValueAtTime(
+                0.001,
+                audioCtx.currentTime + duration
+            );
 
             osc.connect(gain);
             gain.connect(audioCtx.destination);
 
             osc.start();
-            osc.stop(audioCtx.currentTime + duration);
-        } catch(e) {}
+
+            osc.stop(
+                audioCtx.currentTime + duration
+            );
+
+        } catch (e) {}
+
     }
 
     function setTerminalMsg(msg) {
-        const el = document.getElementById('crt-terminal-msg');
+
+        const el =
+            document.getElementById('crt-terminal-msg');
+
         if (el) {
             el.textContent = `> ${msg}`;
         }
+
     }
 
     function updateCRTClock() {
-        const clockEl = document.getElementById('crt-live-clock');
+
+        const clockEl =
+            document.getElementById('crt-live-clock');
+
         if (!clockEl) return;
+
         const now = new Date();
-        const time = now.toLocaleTimeString([], {
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false
-        });
+
+        const time =
+            now.toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+            });
+
         clockEl.textContent = `${time} LOCAL`;
+
     }
 
+    /*
+    ============================================================
+    FIXED LOAD STATE
+    ============================================================
+
+    The original code loaded old captions from localStorage.
+
+    Now:
+    - Original 4 photos always use captions from defaultPhotos.
+    - Uploaded photos keep their saved captions.
+    - Changing a caption in the code will update it.
+    ============================================================
+    */
+
     function loadState() {
-        const storedPhotos = localStorage.getItem('dayout_crt_photos_v2');
+
+        const storedPhotos =
+            localStorage.getItem('dayout_crt_photos_v2');
+
         if (storedPhotos) {
+
             try {
-                state.photos = JSON.parse(storedPhotos);
-            } catch(e) {
-                state.photos = defaultPhotos;
+
+                const savedPhotos =
+                    JSON.parse(storedPhotos);
+
+                state.photos = savedPhotos.map(photo => {
+
+                    const defaultPhoto =
+                        defaultPhotos.find(
+                            defaultItem =>
+                                defaultItem.id === photo.id
+                        );
+
+                    if (defaultPhoto) {
+
+                        return {
+                            ...photo,
+                            src: defaultPhoto.src,
+                            caption: defaultPhoto.caption,
+                            date: defaultPhoto.date
+                        };
+
+                    }
+
+                    return photo;
+
+                });
+
+                /*
+                Make sure any new default photo added
+                to the code also appears.
+                */
+
+                defaultPhotos.forEach(defaultPhoto => {
+
+                    const exists =
+                        state.photos.some(
+                            photo =>
+                                photo.id === defaultPhoto.id
+                        );
+
+                    if (!exists) {
+                        state.photos.push({
+                            ...defaultPhoto
+                        });
+                    }
+
+                });
+
+                savePhotos();
+
+            } catch (e) {
+
+                state.photos =
+                    defaultPhotos.map(photo => ({
+                        ...photo
+                    }));
+
+                savePhotos();
+
             }
+
         } else {
-            state.photos = defaultPhotos;
+
+            state.photos =
+                defaultPhotos.map(photo => ({
+                    ...photo
+                }));
+
             savePhotos();
+
         }
 
-        const storedUnlock = localStorage.getItem('dayout_crt_unlocked');
+        const storedUnlock =
+            localStorage.getItem('dayout_crt_unlocked');
+
         if (storedUnlock === 'true') {
             state.isUnlocked = true;
         }
+
     }
 
     function savePhotos() {
+
         try {
-            localStorage.setItem('dayout_crt_photos_v2', JSON.stringify(state.photos));
-        } catch(e) {
-            setTerminalMsg('STORAGE WARNING: CANNOT PERSIST PHOTO.');
+
+            localStorage.setItem(
+                'dayout_crt_photos_v2',
+                JSON.stringify(state.photos)
+            );
+
+        } catch (e) {
+
+            setTerminalMsg(
+                'STORAGE WARNING: CANNOT PERSIST PHOTO.'
+            );
+
         }
+
     }
 
     function switchTab(tabId) {
-        if (!state.screenPowerOn) return;
-        playCRTBeep(600, 0.04);
-        document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-        document.querySelectorAll('.crt-tab-btn').forEach(btn => {
-            btn.classList.remove('active-tab');
-            btn.classList.add('text-[#00aa44]');
-        });
 
-        const target = document.getElementById(`tab-${tabId}`);
+        if (!state.screenPowerOn) return;
+
+        playCRTBeep(600, 0.04);
+
+        document
+            .querySelectorAll('.tab-content')
+            .forEach(el =>
+                el.classList.add('hidden')
+            );
+
+        document
+            .querySelectorAll('.crt-tab-btn')
+            .forEach(btn => {
+
+                btn.classList.remove('active-tab');
+                btn.classList.add('text-[#00aa44]');
+
+            });
+
+        const target =
+            document.getElementById(`tab-${tabId}`);
+
         if (target) {
+
             target.classList.remove('hidden');
             state.activeTab = tabId;
+
         }
 
-        const activeBtn = document.querySelector(`.crt-tab-btn[data-tab="${tabId}"]`);
+        const activeBtn =
+            document.querySelector(
+                `.crt-tab-btn[data-tab="${tabId}"]`
+            );
+
         if (activeBtn) {
+
             activeBtn.classList.add('active-tab');
             activeBtn.classList.remove('text-[#00aa44]');
+
         }
-        setTerminalMsg(`TAB CHANGED TO: [${tabId.toUpperCase()}]`);
+
+        setTerminalMsg(
+            `TAB CHANGED TO: [${tabId.toUpperCase()}]`
+        );
+
     }
 
     function initTimer() {
-        let totalSecs = 4 * 3600 + 32 * 60 + 15;
+
+        let totalSecs =
+            4 * 3600 + 32 * 60 + 15;
+
         function update() {
-            const overlay = document.getElementById('vlog-lock-overlay');
-            if (state.isUnlocked || totalSecs <= 0) {
+
+            const overlay =
+                document.getElementById(
+                    'vlog-lock-overlay'
+                );
+
+            if (
+                state.isUnlocked ||
+                totalSecs <= 0
+            ) {
+
                 if (overlay) {
                     overlay.classList.add('hidden');
                 }
+
                 return;
+
             }
+
             totalSecs--;
+
         }
+
         setInterval(update, 1000);
+
         update();
+
     }
 
     function renderPolaroids() {
-        const grid = document.getElementById('polaroid-grid');
-        const countLabel = document.getElementById('photo-count');
-        grid.innerHTML = '';
-        countLabel.textContent = state.photos.length;
 
-        const tilts = ['-rotate-1', 'rotate-1', '-rotate-2', 'rotate-2'];
+        const grid =
+            document.getElementById(
+                'polaroid-grid'
+            );
+
+        const countLabel =
+            document.getElementById(
+                'photo-count'
+            );
+
+        grid.innerHTML = '';
+
+        countLabel.textContent =
+            state.photos.length;
+
+        const tilts = [
+            '-rotate-1',
+            'rotate-1',
+            '-rotate-2',
+            'rotate-2'
+        ];
 
         state.photos.forEach((photo, i) => {
-            const tilt = tilts[i % tilts.length];
-            const card = document.createElement('div');
-            card.className = `bg-white p-3 pt-4 rounded shadow-lg hover:scale-105 transition duration-300 cursor-pointer border border-stone-300 relative group ${tilt}`;
+
+            const tilt =
+                tilts[i % tilts.length];
+
+            const card =
+                document.createElement('div');
+
+            card.className =
+                `bg-white p-3 pt-4 rounded shadow-lg hover:scale-105 transition duration-300 cursor-pointer border border-stone-300 relative group ${tilt}`;
+
+            /*
+            IMPORTANT:
+            No "Memory Snap" fallback anymore.
+
+            The caption displayed here is exactly
+            the caption stored in photo.caption.
+            */
+
+            const displayCaption =
+                photo.caption || '';
 
             card.innerHTML = `
+
                 <div class="aspect-square bg-stone-900 rounded overflow-hidden mb-2">
-                    <img src="${photo.src}" alt="${photo.caption}" class="w-full h-full object-cover">
+
+                    <img
+                        src="${photo.src}"
+                        alt="${displayCaption}"
+                        class="w-full h-full object-cover">
+
                 </div>
+
                 <div class="text-center">
+
                     <p class="font-handwriting text-xl text-stone-900 truncate px-1">
-                        ${photo.caption || 'Memory Snap'}
+                        ${displayCaption}
                     </p>
+
                     <p class="text-[9px] text-stone-500 font-mono uppercase">
                         ${photo.date || '2026-09-23'}
                     </p>
+
                 </div>
+
             `;
 
             card.addEventListener('click', () => {
-                if (state.screenPowerOn) openLightbox(photo.id);
+
+                if (state.screenPowerOn) {
+                    openLightbox(photo.id);
+                }
+
             });
+
             grid.appendChild(card);
+
         });
+
     }
 
     function handleFiles(files) {
+
         Array.from(files).forEach(file => {
+
             if (!file.type.startsWith('image/')) return;
-            const reader = new FileReader();
+
+            const reader =
+                new FileReader();
+
             reader.onload = function(e) {
-                const img = new Image();
+
+                const img =
+                    new Image();
+
                 img.onload = function() {
-                    const canvas = document.createElement('canvas');
+
+                    const canvas =
+                        document.createElement('canvas');
+
                     const maxDim = 800;
+
                     let w = img.width;
                     let h = img.height;
 
-                    if (w > h && w > maxDim) {
+                    if (
+                        w > h &&
+                        w > maxDim
+                    ) {
+
                         h *= maxDim / w;
                         w = maxDim;
+
                     } else if (h > maxDim) {
+
                         w *= maxDim / h;
                         h = maxDim;
+
                     }
 
                     canvas.width = w;
                     canvas.height = h;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, w, h);
 
-                    const compressed = canvas.toDataURL('image/jpeg', 0.75);
-                    const today = new Date().toISOString().split('T')[0];
+                    const ctx =
+                        canvas.getContext('2d');
+
+                    ctx.drawImage(
+                        img,
+                        0,
+                        0,
+                        w,
+                        h
+                    );
+
+                    const compressed =
+                        canvas.toDataURL(
+                            'image/jpeg',
+                            0.75
+                        );
+
+                    const today =
+                        new Date()
+                            .toISOString()
+                            .split('T')[0];
 
                     const newPhoto = {
-                        id: 'crt-pol-' + Date.now() + Math.random().toString(36).substr(2, 4),
+
+                        id:
+                            'crt-pol-' +
+                            Date.now() +
+                            Math.random()
+                                .toString(36)
+                                .substr(2, 4),
+
                         src: compressed,
-                        caption: file.name.split('.')[0].replace(/[-_]/g, ' '),
+
+                        caption:
+                            file.name
+                                .split('.')[0]
+                                .replace(/[-_]/g, ' '),
+
                         date: today
+
                     };
 
-                    state.photos.unshift(newPhoto);
+                    state.photos.unshift(
+                        newPhoto
+                    );
+
                     savePhotos();
                     renderPolaroids();
+
                     playCRTBeep(1000, 0.08);
-                    setTerminalMsg('POLAROID IMAGE COMPRESSED & SAVED.');
+
+                    setTerminalMsg(
+                        'POLAROID IMAGE COMPRESSED & SAVED.'
+                    );
+
                 };
-                img.src = e.target.result;
+
+                img.src =
+                    e.target.result;
+
             };
+
             reader.readAsDataURL(file);
+
         });
+
     }
 
     function openLightbox(id) {
+
         playCRTBeep(750, 0.05);
-        const photo = state.photos.find(p => p.id === id);
+
+        const photo =
+            state.photos.find(
+                p => p.id === id
+            );
+
         if (!photo) return;
 
         state.activeInspectId = id;
-        document.getElementById('lb-img').src = photo.src;
-        document.getElementById('lb-caption-input').value = photo.caption || '';
-        document.getElementById('lb-date').textContent = photo.date || '';
-        document.getElementById('lightbox-modal').classList.remove('hidden');
+
+        document.getElementById(
+            'lb-img'
+        ).src = photo.src;
+
+        document.getElementById(
+            'lb-caption-input'
+        ).value = photo.caption || '';
+
+        document.getElementById(
+            'lb-date'
+        ).textContent =
+            photo.date || '';
+
+        document.getElementById(
+            'lightbox-modal'
+        ).classList.remove('hidden');
+
     }
 
     function closeLightbox() {
+
         playCRTBeep(450, 0.04);
-        document.getElementById('lightbox-modal').classList.add('hidden');
+
+        document.getElementById(
+            'lightbox-modal'
+        ).classList.add('hidden');
+
         state.activeInspectId = null;
+
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-        loadState();
-        initTimer();
-        renderPolaroids();
-        setInterval(updateCRTClock, 1000);
-        updateCRTClock();
+    document.addEventListener(
+        'DOMContentLoaded',
+        () => {
 
-        // TAB BUTTONS
-        document.querySelectorAll('.crt-tab-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                switchTab(btn.getAttribute('data-tab'));
-            });
-        });
+            loadState();
 
-        // VLOG UNLOCK BUTTON
-        const unlockOverlayBtn = document.getElementById('btn-unlock-overlay');
-        if (unlockOverlayBtn) {
-            unlockOverlayBtn.addEventListener('click', () => {
-                if (!state.screenPowerOn) return;
-                playCRTBeep(1200, 0.12);
-                state.isUnlocked = true;
-                localStorage.setItem('dayout_crt_unlocked', 'true');
-                document.getElementById('vlog-lock-overlay').classList.add('hidden');
-                setTerminalMsg('OVERRIDE APPROVED: VLOG SIGNAL UNLOCKED.');
-            });
+            initTimer();
+
+            renderPolaroids();
+
+            setInterval(
+                updateCRTClock,
+                1000
+            );
+
+            updateCRTClock();
+
+            document
+                .querySelectorAll('.crt-tab-btn')
+                .forEach(btn => {
+
+                    btn.addEventListener(
+                        'click',
+                        () => {
+
+                            switchTab(
+                                btn.getAttribute(
+                                    'data-tab'
+                                )
+                            );
+
+                        }
+                    );
+
+                });
+
+            const unlockOverlayBtn =
+                document.getElementById(
+                    'btn-unlock-overlay'
+                );
+
+            if (unlockOverlayBtn) {
+
+                unlockOverlayBtn.addEventListener(
+                    'click',
+                    () => {
+
+                        if (!state.screenPowerOn)
+                            return;
+
+                        playCRTBeep(
+                            1200,
+                            0.12
+                        );
+
+                        state.isUnlocked =
+                            true;
+
+                        localStorage.setItem(
+                            'dayout_crt_unlocked',
+                            'true'
+                        );
+
+                        document
+                            .getElementById(
+                                'vlog-lock-overlay'
+                            )
+                            .classList.add(
+                                'hidden'
+                            );
+
+                        setTerminalMsg(
+                            'OVERRIDE APPROVED: VLOG SIGNAL UNLOCKED.'
+                        );
+
+                    }
+                );
+
+            }
+
+            const soundBtn =
+                document.getElementById(
+                    'toggle-sound'
+                );
+
+            const soundIcon =
+                document.getElementById(
+                    'sound-icon'
+                );
+
+            if (soundBtn) {
+
+                soundBtn.addEventListener(
+                    'click',
+                    () => {
+
+                        state.soundEnabled =
+                            !state.soundEnabled;
+
+                        soundIcon.className =
+                            state.soundEnabled
+                                ? "fa-solid fa-volume-high text-xs"
+                                : "fa-solid fa-volume-xmark text-xs";
+
+                        soundBtn.querySelector(
+                            'span'
+                        ).textContent =
+                            state.soundEnabled
+                                ? "SFX: ON"
+                                : "SFX: OFF";
+
+                        playCRTBeep(
+                            800,
+                            0.05
+                        );
+
+                        setTerminalMsg(
+                            state.soundEnabled
+                                ? "SFX ENABLED"
+                                : "SFX MUTED"
+                        );
+
+                    }
+                );
+
+            }
+
+            const scanlinesBtn =
+                document.getElementById(
+                    'toggle-scanlines'
+                );
+
+            const scanlineLayer =
+                document.getElementById(
+                    'scanline-layer'
+                );
+
+            if (
+                scanlinesBtn &&
+                scanlineLayer
+            ) {
+
+                scanlinesBtn.addEventListener(
+                    'click',
+                    () => {
+
+                        state.scanlinesEnabled =
+                            !state.scanlinesEnabled;
+
+                        scanlineLayer.style.display =
+                            state.scanlinesEnabled
+                                ? 'block'
+                                : 'none';
+
+                        playCRTBeep(
+                            700,
+                            0.04
+                        );
+
+                        setTerminalMsg(
+                            state.scanlinesEnabled
+                                ? "SCANLINES ACTIVE"
+                                : "SCANLINES DISABLED"
+                        );
+
+                    }
+                );
+
+            }
+
+            const powerBtn =
+                document.getElementById(
+                    'btn-crt-power'
+                );
+
+            const powerLed =
+                document.getElementById(
+                    'power-led'
+                );
+
+            const screenContent =
+                document.querySelector(
+                    '.crt-flicker-anim'
+                );
+
+            if (
+                powerBtn &&
+                powerLed &&
+                screenContent
+            ) {
+
+                powerBtn.addEventListener(
+                    'click',
+                    () => {
+
+                        state.screenPowerOn =
+                            !state.screenPowerOn;
+
+                        screenContent.classList.remove(
+                            'crt-power-on',
+                            'crt-power-off-anim'
+                        );
+
+                        if (
+                            state.screenPowerOn
+                        ) {
+
+                            powerLed.className =
+                                "w-3 h-3 rounded-full bg-[#00ff66] box-glow-green inline-block";
+
+                            screenContent.style.pointerEvents =
+                                "auto";
+
+                            void screenContent.offsetWidth;
+
+                            screenContent.classList.add(
+                                'crt-power-on'
+                            );
+
+                            playCRTBeep(
+                                950,
+                                0.12
+                            );
+
+                            setTerminalMsg(
+                                "CRT POWER ON"
+                            );
+
+                        } else {
+
+                            powerLed.className =
+                                "w-3 h-3 rounded-full bg-red-600 inline-block";
+
+                            screenContent.style.pointerEvents =
+                                "none";
+
+                            void screenContent.offsetWidth;
+
+                            screenContent.classList.add(
+                                'crt-power-off-anim'
+                            );
+
+                            playCRTBeep(
+                                250,
+                                0.15
+                            );
+
+                            setTerminalMsg(
+                                "CRT POWER OFF"
+                            );
+
+                            closeLightbox();
+
+                        }
+
+                    }
+                );
+
+            }
+
+            const closeLightboxBtn =
+                document.getElementById(
+                    'close-lightbox'
+                );
+
+            const lightboxModal =
+                document.getElementById(
+                    'lightbox-modal'
+                );
+
+            if (
+                closeLightboxBtn &&
+                lightboxModal
+            ) {
+
+                closeLightboxBtn.addEventListener(
+                    'click',
+                    closeLightbox
+                );
+
+                lightboxModal.addEventListener(
+                    'click',
+                    (e) => {
+
+                        if (
+                            e.target.id ===
+                            'lightbox-modal'
+                        ) {
+
+                            closeLightbox();
+
+                        }
+
+                    }
+                );
+
+            }
+
+            const saveCaptionBtn =
+                document.getElementById(
+                    'btn-save-caption'
+                );
+
+            if (saveCaptionBtn) {
+
+                saveCaptionBtn.addEventListener(
+                    'click',
+                    () => {
+
+                        if (
+                            !state.activeInspectId
+                        ) return;
+
+                        const newCaption =
+                            document.getElementById(
+                                'lb-caption-input'
+                            ).value;
+
+                        const photo =
+                            state.photos.find(
+                                p =>
+                                    p.id ===
+                                    state.activeInspectId
+                            );
+
+                        if (photo) {
+
+                            photo.caption =
+                                newCaption;
+
+                            savePhotos();
+                            renderPolaroids();
+
+                            playCRTBeep(
+                                850,
+                                0.05
+                            );
+
+                            setTerminalMsg(
+                                "POLAROID CAPTION UPDATED."
+                            );
+
+                        }
+
+                        closeLightbox();
+
+                    }
+                );
+
+            }
+
+            const downloadPhotoBtn =
+                document.getElementById(
+                    'btn-download-photo'
+                );
+
+            if (downloadPhotoBtn) {
+
+                downloadPhotoBtn.addEventListener(
+                    'click',
+                    () => {
+
+                        if (
+                            !state.activeInspectId
+                        ) return;
+
+                        const photo =
+                            state.photos.find(
+                                p =>
+                                    p.id ===
+                                    state.activeInspectId
+                            );
+
+                        if (photo) {
+
+                            const a =
+                                document.createElement(
+                                    'a'
+                                );
+
+                            a.href =
+                                photo.src;
+
+                            a.download =
+                                `polaroid_${photo.id}.jpg`;
+
+                            document.body.appendChild(a);
+
+                            a.click();
+
+                            document.body.removeChild(a);
+
+                            playCRTBeep(
+                                950,
+                                0.06
+                            );
+
+                            setTerminalMsg(
+                                "IMAGE DOWNLOAD INITIATED."
+                            );
+
+                        }
+
+                    }
+                );
+
+            }
+
+            const deletePhotoBtn =
+                document.getElementById(
+                    'btn-delete-photo'
+                );
+
+            if (deletePhotoBtn) {
+
+                deletePhotoBtn.addEventListener(
+                    'click',
+                    () => {
+
+                        if (
+                            !state.activeInspectId
+                        ) return;
+
+                        state.photos =
+                            state.photos.filter(
+                                p =>
+                                    p.id !==
+                                    state.activeInspectId
+                            );
+
+                        savePhotos();
+                        renderPolaroids();
+
+                        playCRTBeep(
+                            400,
+                            0.08
+                        );
+
+                        setTerminalMsg(
+                            "POLAROID RECORD DELETED."
+                        );
+
+                        closeLightbox();
+
+                    }
+                );
+
+            }
+
+            const joinWaBtn =
+                document.getElementById(
+                    'btn-join-wa'
+                );
+
+            if (joinWaBtn) {
+
+                joinWaBtn.addEventListener(
+                    'click',
+                    () => {
+
+                        if (
+                            !state.screenPowerOn
+                        ) return;
+
+                        playCRTBeep(
+                            900,
+                            0.05
+                        );
+
+                        window.open(
+                            whatsappGroupLink,
+                            '_blank'
+                        );
+
+                        setTerminalMsg(
+                            "REDIRECTING TO WHATSAPP GROUP..."
+                        );
+
+                    }
+                );
+
+            }
+
         }
-
-        // SOUND TOGGLE BUTTON
-        const soundBtn = document.getElementById('toggle-sound');
-        const soundIcon = document.getElementById('sound-icon');
-        if (soundBtn) {
-            soundBtn.addEventListener('click', () => {
-                state.soundEnabled = !state.soundEnabled;
-                soundIcon.className = state.soundEnabled ? "fa-solid fa-volume-high text-xs" : "fa-solid fa-volume-xmark text-xs";
-                soundBtn.querySelector('span').textContent = state.soundEnabled ? "SFX: ON" : "SFX: OFF";
-                playCRTBeep(800, 0.05);
-                setTerminalMsg(state.soundEnabled ? "SFX ENABLED" : "SFX MUTED");
-            });
-        }
-
-        // SCANLINES TOGGLE BUTTON
-        const scanlinesBtn = document.getElementById('toggle-scanlines');
-        const scanlineLayer = document.getElementById('scanline-layer');
-        if (scanlinesBtn && scanlineLayer) {
-            scanlinesBtn.addEventListener('click', () => {
-                state.scanlinesEnabled = !state.scanlinesEnabled;
-                scanlineLayer.style.display = state.scanlinesEnabled ? 'block' : 'none';
-                playCRTBeep(700, 0.04);
-                setTerminalMsg(state.scanlinesEnabled ? "SCANLINES ACTIVE" : "SCANLINES DISABLED");
-            });
-        }
-
-        // CRT POWER BUTTON WITH COLLAPSE/EXPAND ANIMATION
-        const powerBtn = document.getElementById('btn-crt-power');
-        const powerLed = document.getElementById('power-led');
-        const screenContent = document.querySelector('.crt-flicker-anim');
-
-        if (powerBtn && powerLed && screenContent) {
-            powerBtn.addEventListener('click', () => {
-                state.screenPowerOn = !state.screenPowerOn;
-                
-                // Clear previous anim classes to restart them cleanly
-                screenContent.classList.remove('crt-power-on', 'crt-power-off-anim');
-
-                if (state.screenPowerOn) {
-                    powerLed.className = "w-3 h-3 rounded-full bg-[#00ff66] box-glow-green inline-block";
-                    screenContent.style.pointerEvents = "auto";
-                    void screenContent.offsetWidth; // Force reflow
-                    screenContent.classList.add('crt-power-on');
-                    playCRTBeep(950, 0.12);
-                    setTerminalMsg("CRT POWER ON");
-                } else {
-                    powerLed.className = "w-3 h-3 rounded-full bg-red-600 inline-block";
-                    screenContent.style.pointerEvents = "none";
-                    void screenContent.offsetWidth; // Force reflow
-                    screenContent.classList.add('crt-power-off-anim');
-                    playCRTBeep(250, 0.15);
-                    setTerminalMsg("CRT POWER OFF");
-                    // Close lightbox if open when turning off
-                    closeLightbox();
-                }
-            });
-        }
-
-        // FILE UPLOAD DROP ZONE & INPUT
-        const dropZone = document.getElementById('drop-zone');
-        const fileInput = document.getElementById('photo-file-input');
-        if (dropZone && fileInput) {
-            dropZone.addEventListener('click', () => {
-                if (state.screenPowerOn) fileInput.click();
-            });
-            fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
-
-            dropZone.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                if (state.screenPowerOn) dropZone.classList.add('border-[#00ff66]', 'bg-[#041a0b]');
-            });
-
-            dropZone.addEventListener('dragleave', () => {
-                dropZone.classList.remove('border-[#00ff66]', 'bg-[#041a0b]');
-            });
-
-            dropZone.addEventListener('drop', (e) => {
-                e.preventDefault();
-                dropZone.classList.remove('border-[#00ff66]', 'bg-[#041a0b]');
-                if (state.screenPowerOn && e.dataTransfer.files) {
-                    handleFiles(e.dataTransfer.files);
-                }
-            });
-        }
-
-        // LIGHTBOX CONTROLS
-        const closeLightboxBtn = document.getElementById('close-lightbox');
-        const lightboxModal = document.getElementById('lightbox-modal');
-        if (closeLightboxBtn && lightboxModal) {
-            closeLightboxBtn.addEventListener('click', closeLightbox);
-            lightboxModal.addEventListener('click', (e) => {
-                if (e.target.id === 'lightbox-modal') closeLightbox();
-            });
-        }
-
-        const saveCaptionBtn = document.getElementById('btn-save-caption');
-        if (saveCaptionBtn) {
-            saveCaptionBtn.addEventListener('click', () => {
-                if (!state.activeInspectId) return;
-                const newCaption = document.getElementById('lb-caption-input').value;
-                const photo = state.photos.find(p => p.id === state.activeInspectId);
-                if (photo) {
-                    photo.caption = newCaption;
-                    savePhotos();
-                    renderPolaroids();
-                    playCRTBeep(850, 0.05);
-                    setTerminalMsg("POLAROID CAPTION UPDATED.");
-                }
-                closeLightbox();
-            });
-        }
-
-        const downloadPhotoBtn = document.getElementById('btn-download-photo');
-        if (downloadPhotoBtn) {
-            downloadPhotoBtn.addEventListener('click', () => {
-                if (!state.activeInspectId) return;
-                const photo = state.photos.find(p => p.id === state.activeInspectId);
-                if (photo) {
-                    const a = document.createElement('a');
-                    a.href = photo.src;
-                    a.download = `polaroid_${photo.id}.jpg`;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    playCRTBeep(950, 0.06);
-                    setTerminalMsg("IMAGE DOWNLOAD INITIATED.");
-                }
-            });
-        }
-
-        const deletePhotoBtn = document.getElementById('btn-delete-photo');
-        if (deletePhotoBtn) {
-            deletePhotoBtn.addEventListener('click', () => {
-                if (!state.activeInspectId) return;
-                state.photos = state.photos.filter(p => p.id !== state.activeInspectId);
-                savePhotos();
-                renderPolaroids();
-                playCRTBeep(400, 0.08);
-                setTerminalMsg("POLAROID RECORD DELETED.");
-                closeLightbox();
-            });
-        }
-
-        // WHATSAPP BUTTON
-        const joinWaBtn = document.getElementById('btn-join-wa');
-        if (joinWaBtn) {
-            joinWaBtn.addEventListener('click', () => {
-                if (!state.screenPowerOn) return;
-                playCRTBeep(900, 0.05);
-                window.open(whatsappGroupLink, '_blank');
-                setTerminalMsg("REDIRECTING TO WHATSAPP GROUP...");
-            });
-        }
-    });
+    );
 
 </script>
+
 </body>
 </html>
