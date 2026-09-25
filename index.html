@@ -2,7 +2,7 @@
 <html lang="en" class="h-full bg-[#0d0f11] text-[#00ff66]">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>DAY_OUT :: CRT MEMORIES & VLOG REVEAL</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -165,10 +165,67 @@
         .crt-glass-glare {
             background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 60%);
         }
+
+        /* --- Site lock screen --- */
+        #site-lock-overlay {
+            transition: opacity 0.25s ease-out;
+        }
+
+        @keyframes shakeError {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-8px); }
+            40% { transform: translateX(8px); }
+            60% { transform: translateX(-6px); }
+            80% { transform: translateX(6px); }
+        }
+
+        .shake-error {
+            animation: shakeError 0.35s ease-in-out;
+        }
     </style>
 </head>
 
 <body class="min-h-screen flex flex-col justify-between items-center p-2 sm:p-4 select-none">
+
+<!-- =========================================================
+     SITE LOCK OVERLAY
+     Blocks the entire page until a valid passkey is entered.
+     Two passkeys are supported (see SITE_PASSKEYS in the script
+     below) — one for development/testing and one for the real
+     release. This is a client-side gate, not real authentication:
+     anyone who views the page source can read the codes, so treat
+     it as a "keep casual visitors out" lock, not real security.
+     ========================================================= -->
+<div id="site-lock-overlay"
+    class="fixed inset-0 z-[100] bg-[#050805] flex items-center justify-center p-4">
+    <div class="max-w-sm w-full bg-[#021006] border-2 border-[#00ff66] rounded-lg p-6 space-y-4 box-glow-green text-center">
+        <div class="w-14 h-14 mx-auto rounded-full bg-[#00220d] border-2 border-[#00ff66] text-[#00ff66] flex items-center justify-center text-2xl box-glow-green">
+            <i class="fa-solid fa-key"></i>
+        </div>
+        <div>
+            <h2 class="text-2xl font-crt-title text-[#00ff66] text-glow-green">ACCESS RESTRICTED</h2>
+            <p class="text-xs text-[#00aa44] mt-1">Enter passkey to unlock the DAY_OUT terminal.</p>
+        </div>
+        <div class="text-left space-y-2">
+            <input
+                type="password"
+                id="site-passkey-input"
+                class="w-full bg-[#010a04] border border-[#006622] text-[#00ff66] text-center tracking-widest font-mono px-3 py-2.5 rounded outline-none focus:border-[#00ff66] focus:box-glow-green"
+                placeholder="ENTER PASSKEY"
+                autocomplete="off"
+                autocapitalize="off"
+                spellcheck="false"
+            >
+            <button id="btn-site-unlock"
+                class="w-full bg-[#00ff66] hover:bg-[#00cc52] text-black font-bold py-2.5 rounded text-xs uppercase tracking-wider transition">
+                Unlock Terminal
+            </button>
+            <p id="site-lock-error" class="text-[10px] text-red-400 uppercase tracking-wide text-center hidden">
+                Incorrect passkey. Try again.
+            </p>
+        </div>
+    </div>
+</div>
 
 <div class="w-full max-w-6xl mx-auto flex-1 flex flex-col my-auto">
 
@@ -454,6 +511,18 @@
 </div>
 
 <script>
+    // =========================================================
+    // SITE PASSKEYS
+    // Edit these two values to whatever codes you want to use.
+    // "dev" is meant for you while you're testing/building.
+    // "prod" is the real one you actually hand out to people.
+    // Matching is case-insensitive and trims whitespace.
+    // =========================================================
+    const SITE_PASSKEYS = {
+        dev: 'DEV-2026',
+        prod: 'DAYOUT-2026'
+    };
+
     const defaultPhotos = [
         {
             id: 'crt-1',
@@ -494,6 +563,7 @@
 
     const whatsappGroupLink = 'https://chat.whatsapp.com/BWuMp1kiVTD7Mec6IwCpjf';
     let ytPlayer = null;
+    let clockIntervalId = null;
 
     // YouTube IFrame API Callback
     function onYouTubeIframeAPIReady() {
@@ -559,6 +629,10 @@
         }
     }
 
+    // --- FIX: this function only ever ran once before (it was called
+    // a single time on page load with no setInterval), so the clock
+    // rendered one timestamp and then just sat there. It's now driven
+    // by setInterval below so it actually ticks every second. ---
     function updateCRTClock() {
         const clockEl = document.getElementById('crt-live-clock');
         if (!clockEl) return;
@@ -724,11 +798,95 @@
         state.activeInspectId = null;
     }
 
+    // =========================================================
+    // SITE LOCK — full-page passkey gate
+    // =========================================================
+    function normalizeKey(v) {
+        return (v || '').trim().toLowerCase();
+    }
+
+    function checkSiteUnlockedFromStorage() {
+        try {
+            return localStorage.getItem('dayout_site_unlocked') === 'true';
+        } catch (e) {
+            return false;
+        }
+    }
+
+    function unlockSite(envLabel) {
+        const overlay = document.getElementById('site-lock-overlay');
+        try {
+            localStorage.setItem('dayout_site_unlocked', 'true');
+            localStorage.setItem('dayout_site_env', envLabel);
+        } catch (e) {}
+        playCRTBeep(1200, 0.1);
+        if (overlay) {
+            overlay.style.opacity = '0';
+            setTimeout(() => overlay.classList.add('hidden'), 250);
+        }
+        setTerminalMsg(`SITE ACCESS GRANTED (${envLabel.toUpperCase()} KEY).`);
+    }
+
+    function attemptSiteUnlock() {
+        const input = document.getElementById('site-passkey-input');
+        const errorEl = document.getElementById('site-lock-error');
+        const card = input ? input.closest('div.max-w-sm') : null;
+        if (!input) return;
+
+        const entered = normalizeKey(input.value);
+        const devKey = normalizeKey(SITE_PASSKEYS.dev);
+        const prodKey = normalizeKey(SITE_PASSKEYS.prod);
+
+        if (entered && entered === devKey) {
+            unlockSite('development');
+        } else if (entered && entered === prodKey) {
+            unlockSite('production');
+        } else {
+            playCRTBeep(220, 0.12);
+            if (errorEl) errorEl.classList.remove('hidden');
+            if (card) {
+                card.classList.remove('shake-error');
+                // force reflow so the animation can restart
+                void card.offsetWidth;
+                card.classList.add('shake-error');
+            }
+            input.value = '';
+            input.focus();
+        }
+    }
+
+    function initSiteLock() {
+        const overlay = document.getElementById('site-lock-overlay');
+        const input = document.getElementById('site-passkey-input');
+        const unlockBtn = document.getElementById('btn-site-unlock');
+
+        if (checkSiteUnlockedFromStorage()) {
+            if (overlay) overlay.classList.add('hidden');
+        } else if (overlay) {
+            overlay.classList.remove('hidden');
+            if (input) setTimeout(() => input.focus(), 100);
+        }
+
+        if (unlockBtn) {
+            unlockBtn.addEventListener('click', attemptSiteUnlock);
+        }
+        if (input) {
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') attemptSiteUnlock();
+            });
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
+        initSiteLock();
+
         loadState();
         renderPolaroids();
         initTimer();
+
+        // FIX: drive the clock every second instead of rendering it once.
         updateCRTClock();
+        clockIntervalId = setInterval(updateCRTClock, 1000);
 
         // Tabs setup
         document.querySelectorAll('.crt-tab-btn').forEach(btn => {
