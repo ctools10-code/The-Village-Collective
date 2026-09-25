@@ -189,12 +189,9 @@
 
 <!-- =========================================================
      SITE LOCK OVERLAY
-     Blocks the entire page until a valid passkey is entered.
-     Two passkeys are supported (see SITE_PASSKEYS in the script
-     below) — one for development/testing and one for the real
-     release. This is a client-side gate, not real authentication:
-     anyone who views the page source can read the codes, so treat
-     it as a "keep casual visitors out" lock, not real security.
+     Blocks the entire page until a valid passkey is verified by
+     the Cloudflare Worker. The passkey is NOT stored in this HTML.
+     Configure the Worker URL in AUTH_API below.
      ========================================================= -->
 <div id="site-lock-overlay"
     class="fixed inset-0 z-[100] bg-[#050805] flex items-center justify-center p-4">
@@ -512,15 +509,14 @@
 
 <script>
     // =========================================================
-    // SITE PASSKEYS
-    // Edit these two values to whatever codes you want to use.
-    // "dev" is meant for you while you're testing/building.
-    // "prod" is the real one you actually hand out to people.
-    // Matching is case-insensitive and trims whitespace.
+    // CLOUDFLARE AUTHENTICATION
+    // IMPORTANT: Never put the real password in this file.
+    // The real password is stored as SITE_PASSWORD in your
+    // Cloudflare Worker Secret.
+    // Replace ONLY the URL below with your Worker URL.
+    // Example: https://dayout-auth.yourname.workers.dev
     // =========================================================
-    const SITE_PASSKEYS = {
-        prod: 'GLETVC'
-    };
+    const AUTH_API = 'the-village-collective.ctools1-0.workers.dev/';
 
     const defaultPhotos = [
         {
@@ -798,59 +794,105 @@
     }
 
     // =========================================================
-    // SITE LOCK — full-page passkey gate
+    // SITE LOCK — Cloudflare Worker passkey verification
     // =========================================================
     function normalizeKey(v) {
-        return (v || '').trim().toLowerCase();
+        return (v || '').trim();
     }
 
     function checkSiteUnlockedFromStorage() {
-        try {
-            return localStorage.getItem('dayout_site_unlocked') === 'true';
-        } catch (e) {
-            return false;
-        }
+        // Do NOT use localStorage for the site lock.
+        // Anyone can edit localStorage from DevTools.
+        return false;
     }
 
-    function unlockSite(envLabel) {
+    function unlockSite() {
         const overlay = document.getElementById('site-lock-overlay');
-        try {
-            localStorage.setItem('dayout_site_unlocked', 'true');
-            localStorage.setItem('dayout_site_env', envLabel);
-        } catch (e) {}
+        state.isUnlocked = true;
         playCRTBeep(1200, 0.1);
+
         if (overlay) {
             overlay.style.opacity = '0';
             setTimeout(() => overlay.classList.add('hidden'), 250);
         }
-        setTerminalMsg(`SITE ACCESS GRANTED (${envLabel.toUpperCase()} KEY).`);
+
+        setTerminalMsg('SITE ACCESS GRANTED.');
     }
 
-    function attemptSiteUnlock() {
+    async function attemptSiteUnlock() {
         const input = document.getElementById('site-passkey-input');
         const errorEl = document.getElementById('site-lock-error');
+        const button = document.getElementById('btn-site-unlock');
         const card = input ? input.closest('div.max-w-sm') : null;
+
         if (!input) return;
 
         const entered = normalizeKey(input.value);
-        const devKey = normalizeKey(SITE_PASSKEYS.dev);
-        const prodKey = normalizeKey(SITE_PASSKEYS.prod);
+        if (!entered) {
+            if (errorEl) {
+                errorEl.textContent = 'ENTER A PASSKEY.';
+                errorEl.classList.remove('hidden');
+            }
+            input.focus();
+            return;
+        }
 
-        if (entered && entered === devKey) {
-            unlockSite('development');
-        } else if (entered && entered === prodKey) {
-            unlockSite('production');
-        } else {
+        if (!AUTH_API || AUTH_API.includes('YOUR-WORKER-NAME')) {
+            if (errorEl) {
+                errorEl.textContent = 'AUTH SERVER IS NOT CONFIGURED.';
+                errorEl.classList.remove('hidden');
+            }
+            return;
+        }
+
+        if (button) {
+            button.disabled = true;
+            button.textContent = 'VERIFYING...';
+            button.classList.add('opacity-70', 'cursor-wait');
+        }
+        if (errorEl) errorEl.classList.add('hidden');
+
+        try {
+            const response = await fetch(AUTH_API, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ password: entered })
+            });
+
+            const result = await response.json().catch(() => ({}));
+
+            if (response.ok && result.success === true) {
+                input.value = '';
+                unlockSite();
+                return;
+            }
+
             playCRTBeep(220, 0.12);
-            if (errorEl) errorEl.classList.remove('hidden');
+            if (errorEl) {
+                errorEl.textContent = 'INCORRECT PASSKEY. TRY AGAIN.';
+                errorEl.classList.remove('hidden');
+            }
             if (card) {
                 card.classList.remove('shake-error');
-                // force reflow so the animation can restart
                 void card.offsetWidth;
                 card.classList.add('shake-error');
             }
             input.value = '';
             input.focus();
+        } catch (error) {
+            playCRTBeep(180, 0.12);
+            if (errorEl) {
+                errorEl.textContent = 'AUTH SERVER UNAVAILABLE. TRY AGAIN.';
+                errorEl.classList.remove('hidden');
+            }
+        } finally {
+            if (button) {
+                button.disabled = false;
+                button.textContent = 'Unlock Terminal';
+                button.classList.remove('opacity-70', 'cursor-wait');
+            }
         }
     }
 
@@ -859,12 +901,10 @@
         const input = document.getElementById('site-passkey-input');
         const unlockBtn = document.getElementById('btn-site-unlock');
 
-        if (checkSiteUnlockedFromStorage()) {
-            if (overlay) overlay.classList.add('hidden');
-        } else if (overlay) {
-            overlay.classList.remove('hidden');
-            if (input) setTimeout(() => input.focus(), 100);
-        }
+        // Always show the lock when the page loads.
+        // Authentication is verified by Cloudflare, not localStorage.
+        if (overlay) overlay.classList.remove('hidden');
+        if (input) setTimeout(() => input.focus(), 100);
 
         if (unlockBtn) {
             unlockBtn.addEventListener('click', attemptSiteUnlock);
