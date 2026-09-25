@@ -1,1 +1,13 @@
-
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "the-village-collective",
+  "compatibility_date": "2026-09-23",
+  "main": "src/index.js",
+  "observability": {
+    "enabled": true
+  },
+  "assets": {
+    "directory": ".",
+    "binding": "ASSETS"
+  }
+}
