@@ -990,53 +990,77 @@
         }
     }
 
-    function listenToFirebaseConfig() {
-    CONFIG_DOC.onSnapshot((doc) => {
-        if (!doc.exists) {
-            const status = document.getElementById('site-lock-status');
+    async function listenToFirebaseConfig() {
+    const status = document.getElementById('site-lock-status');
+
+    try {
+        console.log("=================================");
+        console.log("FIREBASE DIAGNOSTIC START");
+        console.log("Project ID:", firebase.app().options.projectId);
+        console.log("App ID:", firebase.app().options.appId);
+        console.log("Expected Project: the-village-collective");
+        console.log("Reading: siteConfig/main");
+        console.log("=================================");
+
+        if (status) {
+            status.textContent = "CONNECTING TO FIREBASE...";
+            status.style.color = "#00ff66";
+        }
+
+        const docRef = firebase.firestore()
+            .collection("siteConfig")
+            .doc("main");
+
+        const docSnap = await docRef.get();
+
+        console.log("DOCUMENT EXISTS:", docSnap.exists);
+
+        if (!docSnap.exists) {
+            console.error("=================================");
+            console.error("FIREBASE DOCUMENT NOT FOUND");
+            console.error("Project:", firebase.app().options.projectId);
+            console.error("Collection: siteConfig");
+            console.error("Document: main");
+            console.error("=================================");
 
             if (status) {
-                status.textContent = 'ERROR: siteConfig/main NOT FOUND';
-                status.style.color = '#ff3333';
+                status.textContent = "ERROR: FIREBASE CANNOT SEE siteConfig/main";
+                status.style.color = "#ff4444";
             }
-
-            console.error('=================================');
-            console.error('FIREBASE DOCUMENT NOT FOUND');
-            console.error('Project: the-village-collective');
-            console.error('Collection: siteConfig');
-            console.error('Document: main');
-            console.error('Full path: siteConfig/main');
-            console.error('=================================');
 
             return;
         }
 
-        const data = doc.data();
+        const data = docSnap.data();
 
-        console.log('=================================');
-        console.log('FIREBASE DOCUMENT FOUND');
-        console.log('Document:', data);
-        console.log('Password exists:', typeof data.password === 'string');
-        console.log('Video ID exists:', typeof data.videoId === 'string');
-        console.log('=================================');
+        console.log("=================================");
+        console.log("FIREBASE DOCUMENT FOUND!");
+        console.log("DATA:", data);
+        console.log("PASSWORD:", data.password);
+        console.log("VIDEO ID:", data.videoId);
+        console.log("=================================");
 
         applyFirebaseConfig(data);
 
-    }, (error) => {
+        if (status) {
+            status.textContent = "FIREBASE CONFIG: LIVE";
+            status.style.color = "#00ff66";
+        }
 
-        console.error('=================================');
-        console.error('FIREBASE ERROR');
-        console.error('Code:', error.code);
-        console.error('Message:', error.message);
-        console.error('=================================');
+    } catch (error) {
 
-        const status = document.getElementById('site-lock-status');
+        console.error("=================================");
+        console.error("FIREBASE ERROR");
+        console.error("Code:", error.code);
+        console.error("Message:", error.message);
+        console.error(error);
+        console.error("=================================");
 
         if (status) {
-            status.textContent = 'FIREBASE ERROR: ' + error.code;
-            status.style.color = '#ff3333';
+            status.textContent = "FIREBASE ERROR: " + error.code;
+            status.style.color = "#ff4444";
         }
-    });
+    }
 }
 
     function loadReleasedVideo() {
