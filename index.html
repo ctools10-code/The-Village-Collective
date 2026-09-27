@@ -582,10 +582,14 @@
         appId: "1:493531846553:web:9469b09e42941e149b6508",
         measurementId: "G-DBP8YXHW6F"
     };
-
+    
     firebase.initializeApp(firebaseConfig);
+    
+    console.log("CONNECTED FIREBASE PROJECT:",
+        firebase.app().options.projectId
+    );
+    
     const db = firebase.firestore();
-    const CONFIG_DOC = db.collection('siteConfig').doc('main');
 
     // These values are populated live from Firestore. Nothing is hardcoded here.
     let siteConfig = {
