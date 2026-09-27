@@ -295,6 +295,15 @@
 
 <body class="min-h-screen flex flex-col justify-between items-center p-2 sm:p-4 select-none">
 
+<!-- =========================================================
+     SITE LOCK OVERLAY
+     Blocks the entire page until a valid passkey is entered.
+     Two passkeys are supported (see SITE_PASSKEYS in the script
+     below) — one for development/testing and one for the real
+     release. This is a client-side gate, not real authentication:
+     anyone who views the page source can read the codes, so treat
+     it as a "keep casual visitors out" lock, not real security.
+     ========================================================= -->
 <div id="site-lock-overlay"
     class="fixed inset-0 z-[100] bg-[#050805] flex items-center justify-center p-4">
     <div class="max-w-sm w-full bg-[#021006] border-2 border-[#00ff66] rounded-lg p-6 space-y-4 box-glow-green text-center">
@@ -649,17 +658,18 @@
 <script>
     // =========================================================
     // CONFIG
-    // All the "stuff that changes" (passkeys, the YouTube video,
-    // the two countdown dates, the maps link, the WhatsApp link)
-    // now lives in config.json, sitting next to this HTML file.
-    // Edit config.json only — you should never need to touch the
-    // code below it to update a date or a link.
-    //
-    // The values below are just a built-in fallback in case
-    // config.json can't be reached (e.g. this file is opened on
-    // its own without config.json beside it). Keep config.json as
-    // the source of truth; these are only a safety net.
+    // All editable settings are loaded from config.json.
+    // Keep config.json next to this HTML file and edit that file only
+    // when you need to change passkeys, video ID, countdowns, maps,
+    // or WhatsApp links.
     // =========================================================
+    let CONFIG = {
+        passkeys: {},
+        youtube: {},
+        vlogCountdown: {},
+        nextDayOut: {},
+        whatsapp: {}
+    };
 
     async function loadConfig() {
         try {
