@@ -13,10 +13,6 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
-
     <!-- YouTube IFrame API Script -->
     <script src="https://www.youtube.com/iframe_api"></script>
 
@@ -205,7 +201,7 @@
             <input id="site-passkey-input" type="password" class="w-full bg-[#010a04] border border-[#006622] text-[#00ff66] text-center tracking-widest font-mono px-3 py-2.5 rounded outline-none focus:border-[#00ff66] focus:box-glow-green" placeholder="ENTER PASSKEY" autocomplete="off" autocapitalize="off" spellcheck="false">
             <button id="btn-site-unlock" class="w-full bg-[#00ff66] hover:bg-[#00cc52] text-black font-bold py-2.5 rounded text-xs uppercase tracking-wider transition">Unlock Terminal</button>
             <p id="site-lock-error" class="text-[10px] text-red-400 uppercase tracking-wide text-center hidden">Incorrect passkey. Try again.</p>
-            <p id="site-lock-status" class="text-[9px] text-[#006622] uppercase tracking-widest text-center">SYNCING FIREBASE CONFIG...</p>
+            <p id="site-lock-status" class="text-[9px] text-[#006622] uppercase tracking-widest text-center">LOADING CONFIG FILE...</p>
         </div>
     </div>
 </div>
@@ -334,7 +330,7 @@
                                     VIDEO SIGNAL LOCKED
                                 </h3>
                                 <p id="vlog-lock-description" class="text-xs text-[#00cc52] max-w-sm">
-                                    Video access is controlled by the secure release server.
+                                    Video is scheduled and will appear automatically after the countdown.
                                 </p>
                                 <div id="vlog-countdown"
                                     class="text-2xl sm:text-3xl font-crt-title text-amber-400 text-glow-amber tracking-wider">
@@ -571,42 +567,23 @@
 
 <script>
     // =========================================================
-    // FIREBASE REAL-TIME CONFIG
+    // SIMPLE CONFIG FILE METHOD
     // =========================================================
-    const firebaseConfig = {
-        apiKey: "AIzaSyAtqmBhkpaNxqsaR_STIXLT79B2ZBxr6YQ",
-        authDomain: "the-village-collective.firebaseapp.com",
-        projectId: "the-village-collective",
-        storageBucket: "the-village-collective.firebasestorage.app",
-        messagingSenderId: "493531846553",
-        appId: "1:493531846553:web:9469b09e42941e149b6508",
-        measurementId: "G-DBP8YXHW6F"
-    };
+    // All editable settings are stored in config.json next to this HTML file.
+    // No Firebase SDK, Firestore, Cloudflare Worker, or second video password.
+    //
+    // Edit ONLY config.json when you want to change the password, video,
+    // or release time. The page checks the file automatically every 5 seconds.
+    const CONFIG_URL = './config.json';
 
-    firebase.initializeApp(firebaseConfig);
-
-    // Firestore connection fix:
-    // Some browsers/networks block Firestore's normal WebChannel connection.
-    // Long-polling keeps the same Firestore database/document but uses a more
-    // compatible transport. No design or Firestore data structure is changed.
-    const db = firebase.firestore();
-    db.settings({
-        experimentalForceLongPolling: true
-    });
-
-    const CONFIG_DOC = db.collection('siteConfig').doc('main');
-
-    // These values are populated live from Firestore. Nothing is hardcoded here.
     let siteConfig = {
         password: '',
         videoId: '',
         releaseTimeMs: null
     };
 
-    // 03 October 2026 at 09:00 AM Sri Lanka — fallback only if Firestore
-    // does not contain releaseTime. Recommended: create releaseTime in Firestore.
     const FALLBACK_VIDEO_UNLOCK_AT_UTC = Date.UTC(2026, 9, 3, 3, 30, 0);
-    const VIDEO_UNLOCK_DISPLAY = '03 OCT 2026 // 09:00 AM // SRI LANKA';
+    let VIDEO_UNLOCK_DISPLAY = '03 OCT 2026 // 09:00 AM // SRI LANKA';
 
     const NEXT_DAY_OUT_AT_UTC = Date.UTC(2026, 10, 13, 18, 30, 0);
     const NEXT_DAY_OUT_DISPLAY = '14 NOV 2026';
@@ -660,7 +637,7 @@
     let countdownIntervalId = null;
 
     // YouTube player is created ONLY after the secure Worker authorizes access.
-    // The actual video ID never exists in the GitHub HTML source.
+    // The video ID is loaded from config.json when the page runs.
     function createYouTubePlayer(videoId) {
         if (!videoId || !window.YT || !YT.Player) return;
 
@@ -685,7 +662,7 @@
 
     // YouTube API callback.
     // We intentionally do NOT create a player here because the video ID
-    // must first be returned by the secure Worker after authorization.
+    // is loaded from config.json after the countdown opens.
     function onYouTubeIframeAPIReady() {
         if (state.videoAuthorized && state.authorizedVideoId) {
             createYouTubePlayer(state.authorizedVideoId);
@@ -897,7 +874,7 @@
         } else {
             if (status) status.textContent = 'RELEASE WINDOW OPEN.';
             if (mainTitle) mainTitle.textContent = 'VIDEO RELEASE READY';
-            if (description) description.textContent = 'Release time reached. Loading the current video from Firebase...';
+            if (description) description.textContent = 'Release time reached. Loading the configured video...';
             if (unlockLabel) unlockLabel.textContent = 'RELEASE WINDOW OPEN';
             if (lockIcon) lockIcon.className = 'fa-solid fa-circle-play';
             if (!state.videoAuthorized) {
@@ -936,7 +913,7 @@
             setTimeout(() => overlay.classList.add('hidden'), 250);
         }
         playCRTBeep(1200, 0.1);
-        setTerminalMsg('SITE ACCESS GRANTED. FIREBASE CONFIG SYNCED.');
+        setTerminalMsg('SITE ACCESS GRANTED. CONFIG FILE SYNCED.');
     }
 
     function attemptSiteUnlock() {
@@ -948,7 +925,7 @@
         const entered = input.value.trim();
         if (!siteConfig.password) {
             if (errorEl) {
-                errorEl.textContent = 'FIREBASE CONFIG NOT READY. WAIT A MOMENT.';
+                errorEl.textContent = 'CONFIG FILE NOT READY. WAIT A MOMENT.';
                 errorEl.classList.remove('hidden');
             }
             return;
@@ -974,99 +951,84 @@
         }
     }
 
-    function applyFirebaseConfig(data) {
+    function applyConfigFile(data) {
         siteConfig.password = typeof data.password === 'string' ? data.password : '';
         siteConfig.videoId = typeof data.videoId === 'string' ? data.videoId.trim() : '';
 
-        if (data.releaseTime && typeof data.releaseTime.toMillis === 'function') {
-            siteConfig.releaseTimeMs = data.releaseTime.toMillis();
+        if (typeof data.releaseTime === 'string') {
+            const parsed = Date.parse(data.releaseTime);
+            siteConfig.releaseTimeMs = Number.isFinite(parsed) ? parsed : FALLBACK_VIDEO_UNLOCK_AT_UTC;
         } else if (typeof data.releaseTimeMs === 'number') {
             siteConfig.releaseTimeMs = data.releaseTimeMs;
         } else {
             siteConfig.releaseTimeMs = FALLBACK_VIDEO_UNLOCK_AT_UTC;
         }
 
+        if (typeof data.unlockDisplay === 'string' && data.unlockDisplay.trim()) {
+            VIDEO_UNLOCK_DISPLAY = data.unlockDisplay.trim();
+        } else if (siteConfig.releaseTimeMs) {
+            VIDEO_UNLOCK_DISPLAY = new Intl.DateTimeFormat('en-GB', {
+                timeZone: 'Asia/Colombo',
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+            }).format(new Date(siteConfig.releaseTimeMs)).toUpperCase() + ' // SRI LANKA';
+        }
+
         const status = document.getElementById('site-lock-status');
-        if (status) status.textContent = 'FIREBASE CONFIG: LIVE';
+        if (status) {
+            status.textContent = 'CONFIG FILE: LIVE';
+            status.style.color = '';
+        }
 
         updateVideoCountdown();
         updateNextDayOutCountdown();
 
-        // If the release time has already passed and the site is unlocked,
-        // immediately use the latest video ID from Firestore.
         if (state.isUnlocked && Date.now() >= getVideoUnlockAtMs()) {
             loadReleasedVideo();
         }
     }
 
-    async function listenToFirebaseConfig() {
-        const status = document.getElementById('site-lock-status');
+    let configPollTimer = null;
+    let configRequestRunning = false;
+
+    async function loadConfigFile() {
+        if (configRequestRunning) return;
+        configRequestRunning = true;
 
         try {
-            // Explicitly ask Firestore to reconnect before the first read.
-            // This helps after a browser/network temporarily reports OFFLINE.
-            try {
-                await db.enableNetwork();
-            } catch (networkError) {
-                console.warn('Firestore enableNetwork warning:', networkError);
-            }
-
-            const firstSnapshot = await CONFIG_DOC.get({ source: 'server' });
-
-            console.log('=================================');
-            console.log('FIREBASE DOCUMENT CHECK');
-            console.log('Project:', firebase.app().options.projectId);
-            console.log('Database: default');
-            console.log('Collection: siteConfig');
-            console.log('Document: main');
-            console.log('Exists:', firstSnapshot.exists);
-            console.log('=================================');
-
-            if (!firstSnapshot.exists) {
-                if (status) {
-                    status.textContent = 'ERROR: siteConfig/main NOT FOUND';
-                    status.style.color = '#ff4444';
-                }
-                return;
-            }
-
-            console.log('FIREBASE DATA:', firstSnapshot.data());
-            applyFirebaseConfig(firstSnapshot.data());
-
-            // Keep the existing real-time listener. Changes made in Firebase
-            // will update this page automatically without editing GitHub.
-            CONFIG_DOC.onSnapshot((doc) => {
-                if (!doc.exists) {
-                    if (status) {
-                        status.textContent = 'FIREBASE CONFIG DOCUMENT NOT FOUND';
-                        status.style.color = '#ff4444';
-                    }
-                    return;
-                }
-
-                console.log('FIREBASE REAL-TIME UPDATE:', doc.data());
-                applyFirebaseConfig(doc.data());
-            }, (error) => {
-                console.error('Firestore real-time listener error:', error);
-                if (status) {
-                    status.textContent = 'FIREBASE LIVE LISTENER ERROR: ' + error.code;
-                    status.style.color = '#ff4444';
-                }
+            // Cache-busting prevents GitHub Pages/browser cache from keeping an old config.
+            const response = await fetch(`${CONFIG_URL}?t=${Date.now()}`, {
+                method: 'GET',
+                cache: 'no-store'
             });
 
-        } catch (error) {
-            console.error('=================================');
-            console.error('FIREBASE ERROR');
-            console.error('Code:', error.code);
-            console.error('Message:', error.message);
-            console.error(error);
-            console.error('=================================');
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
 
+            const data = await response.json();
+            applyConfigFile(data);
+        } catch (error) {
+            console.error('Config file error:', error);
+            const status = document.getElementById('site-lock-status');
             if (status) {
-                status.textContent = 'FIREBASE ERROR: ' + (error.code || 'connection');
+                status.textContent = 'CONFIG FILE ERROR: CHECK config.json';
                 status.style.color = '#ff4444';
             }
+        } finally {
+            configRequestRunning = false;
         }
+    }
+
+    function listenToConfigFile() {
+        loadConfigFile();
+
+        if (configPollTimer) clearInterval(configPollTimer);
+        configPollTimer = setInterval(loadConfigFile, 5000);
     }
 
     function loadReleasedVideo() {
@@ -1084,7 +1046,7 @@
             createYouTubePlayer(siteConfig.videoId);
         }
 
-        setTerminalMsg('VIDEO RELEASED. STREAM LOADED FROM FIREBASE.');
+        setTerminalMsg('VIDEO RELEASED. STREAM LOADED FROM CONFIG FILE.');
     }
 
     function renderPolaroids() {
@@ -1151,7 +1113,7 @@
         loadState();
         renderPolaroids();
         initTimer();
-        listenToFirebaseConfig();
+        listenToConfigFile();
 
         const siteUnlockBtn = document.getElementById('btn-site-unlock');
         const sitePasskeyInput = document.getElementById('site-passkey-input');
