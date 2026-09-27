@@ -463,10 +463,6 @@
                                 <div id="vlog-countdown-display" class="font-crt-title text-3xl sm:text-4xl text-amber-400 text-glow-amber tracking-widest">
                                     --D --H --M --S
                                 </div>
-                                <button id="btn-unlock-overlay"
-                                    class="bg-amber-500 hover:bg-amber-400 text-black font-bold px-4 py-2 rounded text-xs uppercase transition tracking-wider">
-                                    Bypass Signal Encryption
-                                </button>
                             </div>
                         </div>
                     </div>
@@ -1248,17 +1244,6 @@
                 }
                 setTerminalMsg('VLOG AUTO-SYNC SCANLINES OVERRIDDEN / DISABLED.');
             }
-        });
-
-        // Overlay Unlock (manual override — the countdown will also auto-unlock)
-        const unlockBtn = document.getElementById('btn-unlock-overlay');
-        unlockBtn.addEventListener('click', () => {
-            state.isUnlocked = true;
-            localStorage.setItem('dayout_crt_unlocked', 'true');
-            playCRTBeep(1200, 0.1);
-            const overlay = document.getElementById('vlog-lock-overlay');
-            if (overlay) overlay.classList.add('hidden');
-            setTerminalMsg('SIGNAL ENCRYPTION BYPASSED SUCCESSFULLY.');
         });
 
         // WhatsApp join button
