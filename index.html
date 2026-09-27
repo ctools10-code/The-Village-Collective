@@ -582,14 +582,19 @@
         appId: "1:493531846553:web:9469b09e42941e149b6508",
         measurementId: "G-DBP8YXHW6F"
     };
-    
+
     firebase.initializeApp(firebaseConfig);
-    
-    console.log("CONNECTED FIREBASE PROJECT:",
-        firebase.app().options.projectId
-    );
-    
+
+    // Firestore connection fix:
+    // Some browsers/networks block Firestore's normal WebChannel connection.
+    // Long-polling keeps the same Firestore database/document but uses a more
+    // compatible transport. No design or Firestore data structure is changed.
     const db = firebase.firestore();
+    db.settings({
+        experimentalForceLongPolling: true
+    });
+
+    const CONFIG_DOC = db.collection('siteConfig').doc('main');
 
     // These values are populated live from Firestore. Nothing is hardcoded here.
     let siteConfig = {
@@ -995,77 +1000,74 @@
     }
 
     async function listenToFirebaseConfig() {
-    const status = document.getElementById('site-lock-status');
+        const status = document.getElementById('site-lock-status');
 
-    try {
-        console.log("=================================");
-        console.log("FIREBASE DIAGNOSTIC START");
-        console.log("Project ID:", firebase.app().options.projectId);
-        console.log("App ID:", firebase.app().options.appId);
-        console.log("Expected Project: the-village-collective");
-        console.log("Reading: siteConfig/main");
-        console.log("=================================");
-
-        if (status) {
-            status.textContent = "CONNECTING TO FIREBASE...";
-            status.style.color = "#00ff66";
-        }
-
-        const docRef = firebase.firestore()
-            .collection("siteConfig")
-            .doc("main");
-
-        const docSnap = await docRef.get();
-
-        console.log("DOCUMENT EXISTS:", docSnap.exists);
-
-        if (!docSnap.exists) {
-            console.error("=================================");
-            console.error("FIREBASE DOCUMENT NOT FOUND");
-            console.error("Project:", firebase.app().options.projectId);
-            console.error("Collection: siteConfig");
-            console.error("Document: main");
-            console.error("=================================");
-
-            if (status) {
-                status.textContent = "ERROR: FIREBASE CANNOT SEE siteConfig/main";
-                status.style.color = "#ff4444";
+        try {
+            // Explicitly ask Firestore to reconnect before the first read.
+            // This helps after a browser/network temporarily reports OFFLINE.
+            try {
+                await db.enableNetwork();
+            } catch (networkError) {
+                console.warn('Firestore enableNetwork warning:', networkError);
             }
 
-            return;
-        }
+            const firstSnapshot = await CONFIG_DOC.get({ source: 'server' });
 
-        const data = docSnap.data();
+            console.log('=================================');
+            console.log('FIREBASE DOCUMENT CHECK');
+            console.log('Project:', firebase.app().options.projectId);
+            console.log('Database: default');
+            console.log('Collection: siteConfig');
+            console.log('Document: main');
+            console.log('Exists:', firstSnapshot.exists);
+            console.log('=================================');
 
-        console.log("=================================");
-        console.log("FIREBASE DOCUMENT FOUND!");
-        console.log("DATA:", data);
-        console.log("PASSWORD:", data.password);
-        console.log("VIDEO ID:", data.videoId);
-        console.log("=================================");
+            if (!firstSnapshot.exists) {
+                if (status) {
+                    status.textContent = 'ERROR: siteConfig/main NOT FOUND';
+                    status.style.color = '#ff4444';
+                }
+                return;
+            }
 
-        applyFirebaseConfig(data);
+            console.log('FIREBASE DATA:', firstSnapshot.data());
+            applyFirebaseConfig(firstSnapshot.data());
 
-        if (status) {
-            status.textContent = "FIREBASE CONFIG: LIVE";
-            status.style.color = "#00ff66";
-        }
+            // Keep the existing real-time listener. Changes made in Firebase
+            // will update this page automatically without editing GitHub.
+            CONFIG_DOC.onSnapshot((doc) => {
+                if (!doc.exists) {
+                    if (status) {
+                        status.textContent = 'FIREBASE CONFIG DOCUMENT NOT FOUND';
+                        status.style.color = '#ff4444';
+                    }
+                    return;
+                }
 
-    } catch (error) {
+                console.log('FIREBASE REAL-TIME UPDATE:', doc.data());
+                applyFirebaseConfig(doc.data());
+            }, (error) => {
+                console.error('Firestore real-time listener error:', error);
+                if (status) {
+                    status.textContent = 'FIREBASE LIVE LISTENER ERROR: ' + error.code;
+                    status.style.color = '#ff4444';
+                }
+            });
 
-        console.error("=================================");
-        console.error("FIREBASE ERROR");
-        console.error("Code:", error.code);
-        console.error("Message:", error.message);
-        console.error(error);
-        console.error("=================================");
+        } catch (error) {
+            console.error('=================================');
+            console.error('FIREBASE ERROR');
+            console.error('Code:', error.code);
+            console.error('Message:', error.message);
+            console.error(error);
+            console.error('=================================');
 
-        if (status) {
-            status.textContent = "FIREBASE ERROR: " + error.code;
-            status.style.color = "#ff4444";
+            if (status) {
+                status.textContent = 'FIREBASE ERROR: ' + (error.code || 'connection');
+                status.style.color = '#ff4444';
+            }
         }
     }
-}
 
     function loadReleasedVideo() {
         if (!state.isUnlocked) return;
