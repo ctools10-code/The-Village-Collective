@@ -182,6 +182,114 @@
         .shake-error {
             animation: shakeError 0.35s ease-in-out;
         }
+
+
+        /* =========================================================
+           DESKTOP CRT AUTO-FIT
+           Desktop: the complete CRT is scaled as one unit.
+           Mobile/tablet: the original responsive layout is restored
+           exactly by removing the wrapper's layout influence.
+           ========================================================= */
+        #crt-fit-stage {
+            width: 100%;
+        }
+
+        #crt-shell {
+            transform-origin: center center;
+        }
+
+        /* PHOTO ARCHIVE SCROLL AREA */
+        .photo-scroll-area {
+            max-height: 440px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-right: 6px;
+            overscroll-behavior: contain;
+            scrollbar-width: thin;
+            scrollbar-color: #008837 #060a06;
+        }
+
+        .photo-scroll-area::-webkit-scrollbar {
+            width: 7px;
+        }
+
+        .photo-scroll-area::-webkit-scrollbar-track {
+            background: #060a06;
+            border-left: 1px solid #00441b;
+        }
+
+        .photo-scroll-area::-webkit-scrollbar-thumb {
+            background: #008837;
+            border-radius: 0;
+        }
+
+        .photo-scroll-area::-webkit-scrollbar-thumb:hover {
+            background: #00ff66;
+        }
+
+        /* Restore the original mobile/tablet layout. */
+        @media (max-width: 1023px) {
+            #crt-fit-stage {
+                display: contents;
+            }
+
+            #crt-shell {
+                position: static;
+                width: 100%;
+                max-width: 72rem;
+                height: auto;
+                min-height: 0;
+                margin: auto;
+                flex: 1 1 0%;
+                transform: none !important;
+            }
+
+            .photo-scroll-area {
+                max-height: 52vh;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            html,
+            body {
+                width: 100%;
+                height: 100%;
+                min-height: 100%;
+            }
+
+            body {
+                overflow: hidden;
+            }
+
+            #crt-fit-stage {
+                position: relative;
+                width: 100%;
+                height: 100%;
+                min-height: 0;
+                flex: 1 1 auto;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                overflow: visible;
+            }
+
+            #crt-shell {
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                width: 864px;
+                height: 833px;
+                max-width: none;
+                min-height: 0;
+                margin: 0;
+                flex: none;
+                transform: translate(-50%, -50%) scale(var(--crt-scale, 1));
+            }
+
+            #crt-monitor-screen {
+                min-height: 0;
+            }
+        }
     </style>
 </head>
 
@@ -227,7 +335,7 @@
     </div>
 </div>
 
-<div class="w-full max-w-6xl mx-auto flex-1 flex flex-col my-auto">
+<div id="crt-fit-stage"><div id="crt-shell" class="w-full max-w-6xl mx-auto flex-1 flex flex-col my-auto">
 
     <!-- Top Monitor Bezel Header -->
     <div class="bg-[#22252a] rounded-t-3xl border-t-4 border-x-4 border-[#333840] pt-3 pb-2 px-6 flex justify-between items-center shadow-2xl">
@@ -383,8 +491,10 @@
                         </div>
                     </div>
 
-                    <div id="polaroid-grid"
-                        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 pt-2">
+                    <div class="photo-scroll-area">
+                        <div id="polaroid-grid"
+                            class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 pt-2 pb-2">
+                        </div>
                     </div>
                 </section>
 
@@ -458,7 +568,7 @@
         </div>
     </div>
 
-</div>
+</div></div>
 
 <!-- Polaroid Lightbox Modal -->
 <div id="lightbox-modal"
@@ -1015,6 +1125,48 @@
         }
     }
 
+
+
+    /* =========================================================
+       DESKTOP CRT AUTO-FIT
+       Reference size is the CRT composition shown in the design:
+       864 x 833. We scale the entire CRT uniformly so no internal
+       element is redesigned, stretched independently, or clipped.
+       ========================================================= */
+    function fitDesktopCRT() {
+        const stage = document.getElementById('crt-fit-stage');
+        const shell = document.getElementById('crt-shell');
+        if (!stage || !shell) return;
+
+        // Below desktop breakpoint, return completely to the original
+        // responsive/mobile layout.
+        if (window.innerWidth < 1024) {
+            shell.style.removeProperty('--crt-scale');
+            shell.style.removeProperty('transform');
+            return;
+        }
+
+        // Reference dimensions for the complete CRT composition.
+        const referenceWidth = 864;
+        const referenceHeight = 833;
+
+        // Account for the body's existing small outer padding.
+        const availableWidth = Math.max(320, window.innerWidth - 20);
+        const availableHeight = Math.max(320, window.innerHeight - 20);
+
+        // Scale the WHOLE CRT uniformly. Never distort the design.
+        const scale = Math.min(
+            availableWidth / referenceWidth,
+            availableHeight / referenceHeight
+        );
+
+        shell.style.setProperty('--crt-scale', String(scale));
+    }
+
+    // Keep the desktop CRT perfectly fitted during resize/orientation changes.
+    window.addEventListener('resize', fitDesktopCRT, { passive: true });
+    window.addEventListener('orientationchange', fitDesktopCRT, { passive: true });
+
     document.addEventListener('DOMContentLoaded', async () => {
         // Load config.json first so every piece below (passkeys, video id,
         // countdown targets, links) reads the real values.
@@ -1187,6 +1339,10 @@
             setTerminalMsg('POLAROID RECORD DELETED.');
             closeLightbox();
         });
+
+        // Fit the complete CRT once the DOM is ready. Resize/orientation
+        // listeners are registered outside this handler.
+        fitDesktopCRT();
     });
 </script>
 
