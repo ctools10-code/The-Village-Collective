@@ -13,6 +13,7 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+
     <!-- YouTube IFrame API Script -->
     <script src="https://www.youtube.com/iframe_api"></script>
 
@@ -187,7 +188,7 @@
 
 <body class="min-h-screen flex flex-col justify-between items-center p-2 sm:p-4 select-none">
 
-<!-- FIREBASE SITE PASSWORD LOCK -->
+<!-- SITE PASSWORD LOCK -->
 <div id="site-lock-overlay" class="fixed inset-0 z-[100] bg-[#050805] flex items-center justify-center p-4">
     <div id="site-lock-card" class="max-w-sm w-full bg-[#021006] border-2 border-[#00ff66] rounded-lg p-6 space-y-4 box-glow-green text-center">
         <div class="w-14 h-14 mx-auto rounded-full bg-[#00220d] border-2 border-[#00ff66] text-[#00ff66] flex items-center justify-center text-2xl box-glow-green">
@@ -568,9 +569,10 @@
 <script>
     // =========================================================
     // EXTERNAL CONFIG.JSON
-    // Keep password/video settings outside this HTML file.
-    // Put config.json beside this HTML file on GitHub Pages.
     // =========================================================
+    // Put config.json beside this HTML file on GitHub Pages.
+    // Password, video ID and release time are read from that file.
+
     let siteConfig = {
         password: '',
         videoId: '',
@@ -869,7 +871,7 @@
         } else {
             if (status) status.textContent = 'RELEASE WINDOW OPEN.';
             if (mainTitle) mainTitle.textContent = 'VIDEO RELEASE READY';
-            if (description) description.textContent = 'Release time reached. Loading the current video from Firebase...';
+            if (description) description.textContent = 'Release time reached. Loading the current video...';
             if (unlockLabel) unlockLabel.textContent = 'RELEASE WINDOW OPEN';
             if (lockIcon) lockIcon.className = 'fa-solid fa-circle-play';
             if (!state.videoAuthorized) {
@@ -920,7 +922,7 @@
         const entered = input.value.trim();
         if (!siteConfig.password) {
             if (errorEl) {
-                errorEl.textContent = 'FIREBASE CONFIG NOT READY. WAIT A MOMENT.';
+                errorEl.textContent = 'CONFIG NOT READY. WAIT A MOMENT.';
                 errorEl.classList.remove('hidden');
             }
             return;
@@ -972,6 +974,7 @@
 
     async function loadExternalConfig() {
         const status = document.getElementById('site-lock-status');
+
         try {
             if (status) status.textContent = 'SYNCING CONFIG.JSON...';
 
@@ -1015,7 +1018,7 @@
             createYouTubePlayer(siteConfig.videoId);
         }
 
-        setTerminalMsg('VIDEO RELEASED. STREAM LOADED FROM CONFIG.');
+        setTerminalMsg('VIDEO RELEASED. STREAM LOADED.');
     }
 
     function renderPolaroids() {
