@@ -991,19 +991,53 @@
     }
 
     function listenToFirebaseConfig() {
-        CONFIG_DOC.onSnapshot((doc) => {
-            if (!doc.exists) {
-                const status = document.getElementById('site-lock-status');
-                if (status) status.textContent = 'FIREBASE CONFIG DOCUMENT NOT FOUND';
-                return;
-            }
-            applyFirebaseConfig(doc.data());
-        }, (error) => {
-            console.error('Firestore config error:', error);
+    CONFIG_DOC.onSnapshot((doc) => {
+        if (!doc.exists) {
             const status = document.getElementById('site-lock-status');
-            if (status) status.textContent = 'FIREBASE CONNECTION ERROR';
-        });
-    }
+
+            if (status) {
+                status.textContent = 'ERROR: siteConfig/main NOT FOUND';
+                status.style.color = '#ff3333';
+            }
+
+            console.error('=================================');
+            console.error('FIREBASE DOCUMENT NOT FOUND');
+            console.error('Project: the-village-collective');
+            console.error('Collection: siteConfig');
+            console.error('Document: main');
+            console.error('Full path: siteConfig/main');
+            console.error('=================================');
+
+            return;
+        }
+
+        const data = doc.data();
+
+        console.log('=================================');
+        console.log('FIREBASE DOCUMENT FOUND');
+        console.log('Document:', data);
+        console.log('Password exists:', typeof data.password === 'string');
+        console.log('Video ID exists:', typeof data.videoId === 'string');
+        console.log('=================================');
+
+        applyFirebaseConfig(data);
+
+    }, (error) => {
+
+        console.error('=================================');
+        console.error('FIREBASE ERROR');
+        console.error('Code:', error.code);
+        console.error('Message:', error.message);
+        console.error('=================================');
+
+        const status = document.getElementById('site-lock-status');
+
+        if (status) {
+            status.textContent = 'FIREBASE ERROR: ' + error.code;
+            status.style.color = '#ff3333';
+        }
+    });
+}
 
     function loadReleasedVideo() {
         if (!state.isUnlocked) return;
