@@ -295,15 +295,6 @@
 
 <body class="min-h-screen flex flex-col justify-between items-center p-2 sm:p-4 select-none">
 
-<!-- =========================================================
-     SITE LOCK OVERLAY
-     Blocks the entire page until a valid passkey is entered.
-     Two passkeys are supported (see SITE_PASSKEYS in the script
-     below) — one for development/testing and one for the real
-     release. This is a client-side gate, not real authentication:
-     anyone who views the page source can read the codes, so treat
-     it as a "keep casual visitors out" lock, not real security.
-     ========================================================= -->
 <div id="site-lock-overlay"
     class="fixed inset-0 z-[100] bg-[#050805] flex items-center justify-center p-4">
     <div class="max-w-sm w-full bg-[#021006] border-2 border-[#00ff66] rounded-lg p-6 space-y-4 box-glow-green text-center">
@@ -669,26 +660,6 @@
     // its own without config.json beside it). Keep config.json as
     // the source of truth; these are only a safety net.
     // =========================================================
-    let CONFIG = {
-        passkeys: {
-            prod: 'GLETVC'
-        },
-        youtube: {
-            videoId: 'LS5M_O2YpMk'
-        },
-        vlogCountdown: {
-            // Local time (no timezone suffix = the visitor's own local clock)
-            target: '2026-10-03T09:00:00'
-        },
-        nextDayOut: {
-            target: '2026-11-14T09:00:00',
-            dateLabel: 'NOV 14 · 9:00 AM',
-            mapsUrl: 'https://maps.app.goo.gl/Z288HbkstNg1AkAh7'
-        },
-        whatsapp: {
-            groupLink: 'https://chat.whatsapp.com/BWuMp1kiVTD7Mec6IwCpjf'
-        }
-    };
 
     async function loadConfig() {
         try {
