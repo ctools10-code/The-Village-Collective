@@ -13,7 +13,6 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-
     <!-- YouTube IFrame API Script -->
     <script src="https://www.youtube.com/iframe_api"></script>
 
@@ -188,9 +187,18 @@
 
 <body class="min-h-screen flex flex-col justify-between items-center p-2 sm:p-4 select-none">
 
-<!-- SITE PASSWORD LOCK -->
-<div id="site-lock-overlay" class="fixed inset-0 z-[100] bg-[#050805] flex items-center justify-center p-4">
-    <div id="site-lock-card" class="max-w-sm w-full bg-[#021006] border-2 border-[#00ff66] rounded-lg p-6 space-y-4 box-glow-green text-center">
+<!-- =========================================================
+     SITE LOCK OVERLAY
+     Blocks the entire page until a valid passkey is entered.
+     Two passkeys are supported (see SITE_PASSKEYS in the script
+     below) — one for development/testing and one for the real
+     release. This is a client-side gate, not real authentication:
+     anyone who views the page source can read the codes, so treat
+     it as a "keep casual visitors out" lock, not real security.
+     ========================================================= -->
+<div id="site-lock-overlay"
+    class="fixed inset-0 z-[100] bg-[#050805] flex items-center justify-center p-4">
+    <div class="max-w-sm w-full bg-[#021006] border-2 border-[#00ff66] rounded-lg p-6 space-y-4 box-glow-green text-center">
         <div class="w-14 h-14 mx-auto rounded-full bg-[#00220d] border-2 border-[#00ff66] text-[#00ff66] flex items-center justify-center text-2xl box-glow-green">
             <i class="fa-solid fa-key"></i>
         </div>
@@ -199,10 +207,22 @@
             <p class="text-xs text-[#00aa44] mt-1">Enter passkey to unlock the DAY_OUT terminal.</p>
         </div>
         <div class="text-left space-y-2">
-            <input id="site-passkey-input" type="password" class="w-full bg-[#010a04] border border-[#006622] text-[#00ff66] text-center tracking-widest font-mono px-3 py-2.5 rounded outline-none focus:border-[#00ff66] focus:box-glow-green" placeholder="ENTER PASSKEY" autocomplete="off" autocapitalize="off" spellcheck="false">
-            <button id="btn-site-unlock" class="w-full bg-[#00ff66] hover:bg-[#00cc52] text-black font-bold py-2.5 rounded text-xs uppercase tracking-wider transition">Unlock Terminal</button>
-            <p id="site-lock-error" class="text-[10px] text-red-400 uppercase tracking-wide text-center hidden">Incorrect passkey. Try again.</p>
-            <p id="site-lock-status" class="text-[9px] text-[#006622] uppercase tracking-widest text-center">SYNCING CONFIG...</p>
+            <input
+                type="password"
+                id="site-passkey-input"
+                class="w-full bg-[#010a04] border border-[#006622] text-[#00ff66] text-center tracking-widest font-mono px-3 py-2.5 rounded outline-none focus:border-[#00ff66] focus:box-glow-green"
+                placeholder="ENTER PASSKEY"
+                autocomplete="off"
+                autocapitalize="off"
+                spellcheck="false"
+            >
+            <button id="btn-site-unlock"
+                class="w-full bg-[#00ff66] hover:bg-[#00cc52] text-black font-bold py-2.5 rounded text-xs uppercase tracking-wider transition">
+                Unlock Terminal
+            </button>
+            <p id="site-lock-error" class="text-[10px] text-red-400 uppercase tracking-wide text-center hidden">
+                Incorrect passkey. Try again.
+            </p>
         </div>
     </div>
 </div>
@@ -268,12 +288,11 @@
                     </p>
                 </div>
 
-                <div class="text-right self-end sm:self-center bg-[#021408] border border-[#005522] px-3 py-1 rounded">
-                    <button id="crt-live-clock"
-                        class="text-xs sm:text-sm font-bold text-[#00ff66] text-glow-green hover:text-amber-400 transition cursor-pointer"
-                        title="Open local time and video countdown">
-                        00:00:00 LOCAL
-                    </button>
+                <div id="crt-clock-btn" class="text-right self-end sm:self-center bg-[#021408] border border-[#005522] px-3 py-1 rounded cursor-pointer hover:box-glow-green transition" title="Click for the next Day Out countdown">
+                    <span id="crt-live-clock"
+                        class="text-xs sm:text-sm font-bold text-[#00ff66] text-glow-green">
+                        00:00:00 UTC
+                    </span>
                 </div>
             </header>
 
@@ -321,29 +340,25 @@
                             <!-- YouTube API Mount Target -->
                             <div id="youtube-player" class="w-full h-full"></div>
 
-                            <!-- Video Unlock Countdown Overlay -->
+                            <!-- Encryption Overlay Lock -->
                             <div id="vlog-lock-overlay"
                                 class="absolute inset-0 bg-[#020d05]/95 backdrop-blur-sm flex flex-col items-center justify-center p-4 text-center z-20 space-y-3 border-2 border-amber-500/50">
                                 <div class="w-12 h-12 rounded-full bg-amber-500/20 border border-amber-500 text-amber-400 flex items-center justify-center text-xl box-glow-amber">
-                                    <i id="vlog-lock-icon" class="fa-solid fa-lock"></i>
+                                    <i class="fa-solid fa-lock"></i>
                                 </div>
-                                <h3 id="vlog-lock-title" class="text-xl sm:text-2xl font-crt-title text-amber-400 text-glow-amber">
-                                    VIDEO SIGNAL LOCKED
+                                <h3 class="text-xl sm:text-2xl font-crt-title text-amber-400 text-glow-amber">
+                                    ENCRYPTED VIDEO SIGNAL
                                 </h3>
-                                <p id="vlog-lock-description" class="text-xs text-[#00cc52] max-w-sm">
-                                    Video access is controlled by the secure release server.
+                                <p class="text-xs text-[#00cc52] max-w-sm">
+                                    Vlog content decrypts automatically when the countdown below hits zero.
                                 </p>
-                                <div id="vlog-countdown"
-                                    class="text-2xl sm:text-3xl font-crt-title text-amber-400 text-glow-amber tracking-wider">
-                                    00D 00H 00M 00S
+                                <div id="vlog-countdown-display" class="font-crt-title text-3xl sm:text-4xl text-amber-400 text-glow-amber tracking-widest">
+                                    --D --H --M --S
                                 </div>
-                                <p id="vlog-unlock-label" class="text-[10px] text-stone-500 uppercase tracking-wider">
-                                    UNLOCKS 03 OCT 2026 // 09:00 AM // SRI LANKA
-                                </p>
-                                <p id="vlog-auto-release" class="text-[10px] text-[#00cc52] uppercase tracking-wider max-w-sm">
-                                    NO SECOND PASSWORD REQUIRED. THE VIDEO WILL APPEAR AUTOMATICALLY AFTER THE COUNTDOWN.
-                                </p>
-                                </div>
+                                <button id="btn-unlock-overlay"
+                                    class="bg-amber-500 hover:bg-amber-400 text-black font-bold px-4 py-2 rounded text-xs uppercase transition tracking-wider">
+                                    Bypass Signal Encryption
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -445,74 +460,6 @@
 
 </div>
 
-
-<!-- LOCAL TIME / NEXT DAY OUT MODAL -->
-<div id="time-info-modal"
-    class="fixed inset-0 z-[70] bg-black/85 backdrop-blur-md hidden items-center justify-center p-4">
-    <div class="bg-[#051208] border-2 border-[#00ff66] rounded-lg max-w-md w-full p-5 sm:p-6 space-y-5 relative box-glow-green">
-        <button id="close-time-info"
-            class="absolute top-3 right-3 text-[#00ff66] hover:text-amber-400 text-lg w-8 h-8 rounded bg-[#02200c] border border-[#006622] flex items-center justify-center"
-            aria-label="Close time information">
-            <i class="fa-solid fa-xmark"></i>
-        </button>
-
-        <div class="text-center space-y-1 pr-8">
-            <div class="text-[10px] text-amber-400 tracking-widest uppercase font-bold">
-                LOCAL SYSTEM TIME
-            </div>
-            <h3 class="text-3xl sm:text-4xl font-crt-title text-[#00ff66] text-glow-green">
-                <span id="modal-local-time">00:00:00</span>
-            </h3>
-            <p id="modal-local-date" class="text-xs text-[#00cc52] uppercase">
-                LOADING DATE...
-            </p>
-            <p id="modal-local-zone" class="text-[10px] text-stone-500 uppercase tracking-wider">
-                TIMEZONE: DETECTING...
-            </p>
-        </div>
-
-        <div class="border-t border-[#00441b] pt-4 space-y-3">
-            <div class="text-center">
-                <div class="text-[10px] text-amber-400 tracking-widest uppercase font-bold mb-1">
-                    NEXT DAY OUT
-                </div>
-                <div id="modal-next-day-date" class="text-2xl sm:text-3xl font-crt-title text-[#00ff66] text-glow-green">
-                    14 NOV 2026
-                </div>
-            </div>
-
-            <div class="flex items-center justify-between text-xs">
-                <span class="text-stone-400">LOCATION</span>
-                <a id="modal-location-link"
-                    href="https://maps.app.goo.gl/oWa2TpcVBAuUPdCq5"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="text-[#00ff66] font-bold hover:text-amber-400 hover:underline transition">
-                    DAY OUT LOCATION <i class="fa-solid fa-location-dot ml-1"></i>
-                </a>
-            </div>
-
-            <div class="bg-[#010a04] border border-[#005522] rounded p-4 text-center">
-                <p class="text-[10px] text-[#00aa44] tracking-widest uppercase mb-2">
-                    NEXT DAY OUT COUNTDOWN
-                </p>
-                <div id="modal-next-day-countdown"
-                    class="text-2xl sm:text-3xl font-crt-title text-amber-400 text-glow-amber tracking-wider">
-                    00D 00H 00M 00S
-                </div>
-                <p id="modal-next-day-status"
-                    class="text-[10px] text-[#00cc52] uppercase tracking-wider mt-2">
-                    CALCULATING...
-                </p>
-            </div>
-
-            <div class="text-center text-[10px] text-stone-500 uppercase">
-                NEXT DAY OUT: 14 NOV 2026 // SRI LANKA
-            </div>
-        </div>
-    </div>
-</div>
-
 <!-- Polaroid Lightbox Modal -->
 <div id="lightbox-modal"
     class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4">
@@ -566,26 +513,92 @@
     </div>
 </div>
 
+<!-- Next Day Out Countdown Modal (opens on clicking the clock) -->
+<div id="nextdayout-modal"
+    class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4">
+    <div class="bg-[#051208] border-2 border-[#00ff66] rounded-lg max-w-md w-full p-5 space-y-4 relative box-glow-green text-center">
+        <button id="close-nextdayout"
+            class="absolute top-3 right-3 text-[#00ff66] hover:text-amber-400 text-lg w-8 h-8 rounded bg-[#02200c] border border-[#006622] flex items-center justify-center">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <div class="w-14 h-14 mx-auto rounded-full bg-[#00220d] border-2 border-[#00ff66] text-[#00ff66] flex items-center justify-center text-2xl box-glow-green">
+            <i class="fa-solid fa-calendar-days"></i>
+        </div>
+
+        <div>
+            <span class="text-[10px] text-amber-400 tracking-widest uppercase font-bold">T-MINUS</span>
+            <h3 class="text-2xl font-crt-title text-[#00ff66] text-glow-green">NEXT DAY OUT</h3>
+        </div>
+
+        <div id="nextdayout-countdown" class="font-crt-title text-3xl sm:text-4xl text-amber-400 text-glow-amber tracking-widest">
+            --D --H --M --S
+        </div>
+
+        <p id="nextdayout-date-label" class="text-xs text-[#00cc52]"></p>
+
+        <a id="nextdayout-maps-link" href="#" target="_blank" rel="noopener noreferrer"
+            class="w-full bg-[#00ff66] hover:bg-[#00cc52] text-black font-bold py-2.5 px-4 rounded text-xs uppercase tracking-wider transition flex items-center justify-center gap-2 box-glow-green">
+            <i class="fa-solid fa-location-dot"></i>
+            <span>OPEN LOCATION</span>
+        </a>
+    </div>
+</div>
+
 <script>
     // =========================================================
-    // EXTERNAL CONFIG.JSON
+    // CONFIG
+    // All the "stuff that changes" (passkeys, the YouTube video,
+    // the two countdown dates, the maps link, the WhatsApp link)
+    // now lives in config.json, sitting next to this HTML file.
+    // Edit config.json only — you should never need to touch the
+    // code below it to update a date or a link.
+    //
+    // The values below are just a built-in fallback in case
+    // config.json can't be reached (e.g. this file is opened on
+    // its own without config.json beside it). Keep config.json as
+    // the source of truth; these are only a safety net.
     // =========================================================
-    // Put config.json beside this HTML file on GitHub Pages.
-    // Password, video ID and release time are read from that file.
-
-    let siteConfig = {
-        password: '',
-        videoId: '',
-        releaseTimeMs: null
+    let CONFIG = {
+        passkeys: {
+            prod: 'GLETVC'
+        },
+        youtube: {
+            videoId: 'LS5M_O2YpMk'
+        },
+        vlogCountdown: {
+            // Local time (no timezone suffix = the visitor's own local clock)
+            target: '2026-10-03T09:00:00'
+        },
+        nextDayOut: {
+            target: '2026-11-14T09:00:00',
+            dateLabel: 'NOV 14 · 9:00 AM',
+            mapsUrl: 'https://maps.app.goo.gl/Z288HbkstNg1AkAh7'
+        },
+        whatsapp: {
+            groupLink: 'https://chat.whatsapp.com/BWuMp1kiVTD7Mec6IwCpjf'
+        }
     };
 
-    const FALLBACK_VIDEO_UNLOCK_AT_UTC = Date.UTC(2026, 9, 3, 3, 30, 0);
-    const VIDEO_UNLOCK_DISPLAY = '03 OCT 2026 // 09:00 AM // SRI LANKA';
-
-    const NEXT_DAY_OUT_AT_UTC = Date.UTC(2026, 10, 13, 18, 30, 0);
-    const NEXT_DAY_OUT_DISPLAY = '14 NOV 2026';
-    const NEXT_DAY_OUT_LOCATION = 'DAY OUT LOCATION';
-    const NEXT_DAY_OUT_MAP_URL = 'https://maps.app.goo.gl/oWa2TpcVBAuUPdCq5';
+    async function loadConfig() {
+        try {
+            const res = await fetch('config.json', { cache: 'no-store' });
+            if (res.ok) {
+                const data = await res.json();
+                CONFIG = {
+                    passkeys: { ...CONFIG.passkeys, ...(data.passkeys || {}) },
+                    youtube: { ...CONFIG.youtube, ...(data.youtube || {}) },
+                    vlogCountdown: { ...CONFIG.vlogCountdown, ...(data.vlogCountdown || {}) },
+                    nextDayOut: { ...CONFIG.nextDayOut, ...(data.nextDayOut || {}) },
+                    whatsapp: { ...CONFIG.whatsapp, ...(data.whatsapp || {}) }
+                };
+            }
+        } catch (e) {
+            // config.json missing or unreadable (e.g. opened via file:// without
+            // it alongside) — CONFIG keeps the built-in fallback values above.
+            console.warn('config.json not found or unreadable, using built-in fallback config.', e);
+        }
+    }
 
     const defaultPhotos = [
         {
@@ -617,35 +630,31 @@
     let state = {
         activeTab: 'vlog',
         isUnlocked: false,
-        videoAuthorized: false,
         photos: [],
         activeInspectId: null,
         soundEnabled: true,
         scanlinesEnabled: true,
         screenPowerOn: true,
-        autoSyncScanlines: true,
-        serverTimeOffsetMs: 0,
-        authorizedVideoId: ''
+        autoSyncScanlines: true // Auto-hide scanlines when video plays
     };
 
-    const whatsappGroupLink = 'https://chat.whatsapp.com/BWuMp1kiVTD7Mec6IwCpjf';
     let ytPlayer = null;
     let clockIntervalId = null;
-    let countdownIntervalId = null;
+    let ytApiReady = false;
+    let configReady = false;
 
-    // YouTube player is created ONLY after the secure Worker authorizes access.
-    // The actual video ID never exists in the GitHub HTML source.
-    function createYouTubePlayer(videoId) {
-        if (!videoId || !window.YT || !YT.Player) return;
+    // YouTube IFrame API Callback
+    function onYouTubeIframeAPIReady() {
+        ytApiReady = true;
+        tryInitPlayer();
+    }
 
-        if (ytPlayer && typeof ytPlayer.destroy === 'function') {
-            try { ytPlayer.destroy(); } catch (e) {}
-        }
-
+    function tryInitPlayer() {
+        if (!ytApiReady || !configReady || ytPlayer) return;
         ytPlayer = new YT.Player('youtube-player', {
             height: '100%',
             width: '100%',
-            videoId: videoId,
+            videoId: CONFIG.youtube.videoId,
             playerVars: {
                 'playsinline': 1,
                 'modestbranding': 1,
@@ -655,15 +664,6 @@
                 'onStateChange': onPlayerStateChange
             }
         });
-    }
-
-    // YouTube API callback.
-    // We intentionally do NOT create a player here because the video ID
-    // must first be returned by the secure Worker after authorization.
-    function onYouTubeIframeAPIReady() {
-        if (state.videoAuthorized && state.authorizedVideoId) {
-            createYouTubePlayer(state.authorizedVideoId);
-        }
     }
 
     function onPlayerStateChange(event) {
@@ -713,39 +713,91 @@
         }
     }
 
-    // --- FIX: this function only ever ran once before (it was called
-    // a single time on page load with no setInterval), so the clock
-    // rendered one timestamp and then just sat there. It's now driven
-    // by setInterval below so it actually ticks every second. ---
-    function updateCRTClock() {
-        const now = new Date();
+    function pad2(n) {
+        return String(n).padStart(2, '0');
+    }
 
-        const time = new Intl.DateTimeFormat('en-GB', {
-            timeZone: 'Asia/Colombo',
+    // Drives the header clock every second.
+    function updateCRTClock() {
+        const clockEl = document.getElementById('crt-live-clock');
+        if (!clockEl) return;
+        const now = new Date();
+        const time = now.toLocaleTimeString([], {
             hour: '2-digit',
             minute: '2-digit',
             second: '2-digit',
             hour12: false
-        }).format(now);
+        });
+        clockEl.textContent = `${time} LOCAL`;
+    }
 
-        const date = new Intl.DateTimeFormat('en-GB', {
-            timeZone: 'Asia/Colombo',
-            weekday: 'long',
-            day: '2-digit',
-            month: 'short',
-            year: 'numeric'
-        }).format(now);
+    // Live countdown to CONFIG.vlogCountdown.target. Auto-unlocks the vlog
+    // overlay the moment the countdown hits zero — no click needed.
+    function updateVlogCountdown() {
+        const display = document.getElementById('vlog-countdown-display');
+        const overlay = document.getElementById('vlog-lock-overlay');
+        if (!display || !overlay) return;
 
-        const clockEl = document.getElementById('crt-live-clock');
-        if (clockEl) clockEl.textContent = `${time} LOCAL`;
+        if (state.isUnlocked) {
+            overlay.classList.add('hidden');
+            return;
+        }
 
-        const modalTime = document.getElementById('modal-local-time');
-        const modalDate = document.getElementById('modal-local-date');
-        const modalZone = document.getElementById('modal-local-zone');
+        const target = new Date(CONFIG.vlogCountdown.target).getTime();
+        const diff = target - Date.now();
 
-        if (modalTime) modalTime.textContent = time;
-        if (modalDate) modalDate.textContent = date;
-        if (modalZone) modalZone.textContent = 'TIMEZONE: ASIA/COLOMBO // UTC +05:30';
+        if (isNaN(target) || diff <= 0) {
+            state.isUnlocked = true;
+            try { localStorage.setItem('dayout_crt_unlocked', 'true'); } catch (e) {}
+            overlay.classList.add('hidden');
+            setTerminalMsg('COUNTDOWN COMPLETE: VLOG SIGNAL AUTO-DECRYPTED.');
+            return;
+        }
+
+        const days = Math.floor(diff / 86400000);
+        const hours = Math.floor((diff % 86400000) / 3600000);
+        const mins = Math.floor((diff % 3600000) / 60000);
+        const secs = Math.floor((diff % 60000) / 1000);
+        display.textContent = `${days}D ${pad2(hours)}H ${pad2(mins)}M ${pad2(secs)}S`;
+    }
+
+    // Live countdown to CONFIG.nextDayOut.target, shown inside the clock's popup.
+    function updateNextDayOutCountdown() {
+        const display = document.getElementById('nextdayout-countdown');
+        if (!display) return;
+
+        const target = new Date(CONFIG.nextDayOut.target).getTime();
+        const diff = target - Date.now();
+
+        if (isNaN(target)) {
+            display.textContent = '--D --H --M --S';
+            return;
+        }
+
+        if (diff <= 0) {
+            display.textContent = "IT'S TODAY!";
+            return;
+        }
+
+        const days = Math.floor(diff / 86400000);
+        const hours = Math.floor((diff % 86400000) / 3600000);
+        const mins = Math.floor((diff % 3600000) / 60000);
+        const secs = Math.floor((diff % 60000) / 1000);
+        display.textContent = `${days}D ${pad2(hours)}H ${pad2(mins)}M ${pad2(secs)}S`;
+    }
+
+    function openNextDayOutModal() {
+        if (!state.screenPowerOn) return;
+        playCRTBeep(750, 0.05);
+        document.getElementById('nextdayout-date-label').textContent = CONFIG.nextDayOut.dateLabel || '';
+        document.getElementById('nextdayout-maps-link').href = CONFIG.nextDayOut.mapsUrl || '#';
+        updateNextDayOutCountdown();
+        document.getElementById('nextdayout-modal').classList.remove('hidden');
+    }
+
+    function closeNextDayOutModal() {
+        playCRTBeep(450, 0.04);
+        document.getElementById('nextdayout-modal').classList.add('hidden');
     }
 
     function loadState() {
@@ -786,6 +838,11 @@
             state.photos = defaultPhotos.map(photo => ({ ...photo }));
             savePhotos();
         }
+
+        const storedUnlock = localStorage.getItem('dayout_crt_unlocked');
+        if (storedUnlock === 'true') {
+            state.isUnlocked = true;
+        }
     }
 
     function savePhotos() {
@@ -819,206 +876,6 @@
         }
 
         setTerminalMsg(`TAB CHANGED TO: [${tabId.toUpperCase()}]`);
-    }
-
-    function getAuthoritativeNowMs() {
-        return Date.now() + (state.serverTimeOffsetMs || 0);
-    }
-
-    function formatCountdown(ms) {
-        if (ms <= 0) return '00D 00H 00M 00S';
-
-        const totalSeconds = Math.floor(ms / 1000);
-        const days = Math.floor(totalSeconds / 86400);
-        const hours = Math.floor((totalSeconds % 86400) / 3600);
-        const minutes = Math.floor((totalSeconds % 3600) / 60);
-        const seconds = totalSeconds % 60;
-
-        return `${String(days).padStart(2, '0')}D ` +
-               `${String(hours).padStart(2, '0')}H ` +
-               `${String(minutes).padStart(2, '0')}M ` +
-               `${String(seconds).padStart(2, '0')}S`;
-    }
-
-    function getVideoUnlockAtMs() {
-        return Number.isFinite(siteConfig.releaseTimeMs) ? siteConfig.releaseTimeMs : FALLBACK_VIDEO_UNLOCK_AT_UTC;
-    }
-
-    function updateVideoCountdown() {
-        const unlockAt = getVideoUnlockAtMs();
-        const remaining = unlockAt - Date.now();
-        const countdown = formatCountdown(Math.max(0, remaining));
-
-        const mainCountdown = document.getElementById('vlog-countdown');
-        const modalCountdown = document.getElementById('modal-countdown');
-        if (mainCountdown) mainCountdown.textContent = countdown;
-        if (modalCountdown) modalCountdown.textContent = countdown;
-
-        const status = document.getElementById('modal-unlock-status');
-        const mainTitle = document.getElementById('vlog-lock-title');
-        const description = document.getElementById('vlog-lock-description');
-        const unlockLabel = document.getElementById('vlog-unlock-label');
-        const lockIcon = document.getElementById('vlog-lock-icon');
-        const overlay = document.getElementById('vlog-lock-overlay');
-
-        if (remaining > 0) {
-            if (status) status.textContent = 'RELEASE WINDOW NOT REACHED.';
-            if (mainTitle) mainTitle.textContent = 'VIDEO SIGNAL LOCKED';
-            if (description) description.textContent = 'Video access is locked until the scheduled release time.';
-            if (unlockLabel) unlockLabel.textContent = VIDEO_UNLOCK_DISPLAY;
-            if (lockIcon) lockIcon.className = 'fa-solid fa-lock';
-            if (overlay && !state.videoAuthorized) overlay.classList.remove('hidden');
-        } else {
-            if (status) status.textContent = 'RELEASE WINDOW OPEN.';
-            if (mainTitle) mainTitle.textContent = 'VIDEO RELEASE READY';
-            if (description) description.textContent = 'Release time reached. Loading the current video...';
-            if (unlockLabel) unlockLabel.textContent = 'RELEASE WINDOW OPEN';
-            if (lockIcon) lockIcon.className = 'fa-solid fa-circle-play';
-            if (!state.videoAuthorized) {
-                loadReleasedVideo();
-            }
-        }
-    }
-
-    function updateNextDayOutCountdown() {
-        const remaining = NEXT_DAY_OUT_AT_UTC - getAuthoritativeNowMs();
-        const countdown = formatCountdown(Math.max(0, remaining));
-        const countdownEl = document.getElementById('modal-next-day-countdown');
-        const statusEl = document.getElementById('modal-next-day-status');
-        const dateEl = document.getElementById('modal-next-day-date');
-
-        if (countdownEl) countdownEl.textContent = countdown;
-        if (dateEl) dateEl.textContent = NEXT_DAY_OUT_DISPLAY;
-
-        if (remaining > 0) {
-            if (statusEl) statusEl.textContent = 'COUNTING DOWN TO THE NEXT DAY OUT.';
-        } else {
-            if (statusEl) statusEl.textContent = 'DAY OUT DATE REACHED.';
-        }
-    }
-
-    function initTimer() {
-        updateVideoCountdown();
-        countdownIntervalId = setInterval(updateVideoCountdown, 1000);
-    }
-
-    function unlockSite() {
-        state.isUnlocked = true;
-        const overlay = document.getElementById('site-lock-overlay');
-        if (overlay) {
-            overlay.style.opacity = '0';
-            setTimeout(() => overlay.classList.add('hidden'), 250);
-        }
-        playCRTBeep(1200, 0.1);
-        setTerminalMsg('SITE ACCESS GRANTED. CONFIG SYNCED.');
-    }
-
-    function attemptSiteUnlock() {
-        const input = document.getElementById('site-passkey-input');
-        const errorEl = document.getElementById('site-lock-error');
-        const card = document.getElementById('site-lock-card');
-        if (!input) return;
-
-        const entered = input.value.trim();
-        if (!siteConfig.password) {
-            if (errorEl) {
-                errorEl.textContent = 'CONFIG NOT READY. WAIT A MOMENT.';
-                errorEl.classList.remove('hidden');
-            }
-            return;
-        }
-
-        if (entered && entered === String(siteConfig.password).trim()) {
-            if (errorEl) errorEl.classList.add('hidden');
-            unlockSite();
-            input.value = '';
-        } else {
-            playCRTBeep(220, 0.12);
-            if (errorEl) {
-                errorEl.textContent = 'Incorrect passkey. Try again.';
-                errorEl.classList.remove('hidden');
-            }
-            if (card) {
-                card.classList.remove('shake-error');
-                void card.offsetWidth;
-                card.classList.add('shake-error');
-            }
-            input.value = '';
-            input.focus();
-        }
-    }
-
-    function applyExternalConfig(data) {
-        siteConfig.password = typeof data.password === 'string' ? data.password : '';
-        siteConfig.videoId = typeof data.videoId === 'string' ? data.videoId.trim() : '';
-
-        if (typeof data.releaseTimeMs === 'number') {
-            siteConfig.releaseTimeMs = data.releaseTimeMs;
-        } else if (typeof data.releaseTime === 'string') {
-            const parsed = Date.parse(data.releaseTime);
-            siteConfig.releaseTimeMs = Number.isFinite(parsed) ? parsed : FALLBACK_VIDEO_UNLOCK_AT_UTC;
-        } else {
-            siteConfig.releaseTimeMs = FALLBACK_VIDEO_UNLOCK_AT_UTC;
-        }
-
-        const status = document.getElementById('site-lock-status');
-        if (status) status.textContent = 'CONFIG.JSON: LIVE';
-
-        updateVideoCountdown();
-        updateNextDayOutCountdown();
-
-        if (state.isUnlocked && Date.now() >= getVideoUnlockAtMs()) {
-            loadReleasedVideo();
-        }
-    }
-
-    async function loadExternalConfig() {
-        const status = document.getElementById('site-lock-status');
-
-        try {
-            if (status) status.textContent = 'SYNCING CONFIG.JSON...';
-
-            const response = await fetch('config.json?v=' + Date.now(), {
-                cache: 'no-store'
-            });
-
-            if (!response.ok) {
-                throw new Error('HTTP ' + response.status);
-            }
-
-            const data = await response.json();
-            applyExternalConfig(data);
-
-            console.log('EXTERNAL CONFIG LOADED', {
-                passwordExists: typeof data.password === 'string',
-                videoIdExists: typeof data.videoId === 'string',
-                releaseTime: data.releaseTime || data.releaseTimeMs || null
-            });
-        } catch (error) {
-            console.error('CONFIG.JSON ERROR:', error);
-            if (status) {
-                status.textContent = 'CONFIG ERROR: config.json NOT FOUND';
-                status.style.color = '#ff3333';
-            }
-        }
-    }
-
-    function loadReleasedVideo() {
-        if (!state.isUnlocked) return;
-        if (Date.now() < getVideoUnlockAtMs()) return;
-        if (!siteConfig.videoId) return;
-
-        state.videoAuthorized = true;
-        state.authorizedVideoId = siteConfig.videoId;
-
-        const overlay = document.getElementById('vlog-lock-overlay');
-        if (overlay) overlay.classList.add('hidden');
-
-        if (window.YT && YT.Player) {
-            createYouTubePlayer(siteConfig.videoId);
-        }
-
-        setTerminalMsg('VIDEO RELEASED. STREAM LOADED.');
     }
 
     function renderPolaroids() {
@@ -1079,33 +936,105 @@
         state.activeInspectId = null;
     }
 
+    // =========================================================
+    // SITE LOCK — full-page passkey gate
+    // =========================================================
+    function normalizeKey(v) {
+        return (v || '').trim().toLowerCase();
+    }
 
+    function checkSiteUnlockedFromStorage() {
+        try {
+            return localStorage.getItem('dayout_site_unlocked') === 'true';
+        } catch (e) {
+            return false;
+        }
+    }
 
-    document.addEventListener('DOMContentLoaded', () => {
-        loadState();
-        renderPolaroids();
-        initTimer();
-        loadExternalConfig();
+    function unlockSite(envLabel) {
+        const overlay = document.getElementById('site-lock-overlay');
+        try {
+            localStorage.setItem('dayout_site_unlocked', 'true');
+            localStorage.setItem('dayout_site_env', envLabel);
+        } catch (e) {}
+        playCRTBeep(1200, 0.1);
+        if (overlay) {
+            overlay.style.opacity = '0';
+            setTimeout(() => overlay.classList.add('hidden'), 250);
+        }
+        setTerminalMsg(`SITE ACCESS GRANTED (${envLabel.toUpperCase()} KEY).`);
+    }
 
-        const siteUnlockBtn = document.getElementById('btn-site-unlock');
-        const sitePasskeyInput = document.getElementById('site-passkey-input');
-        if (siteUnlockBtn) siteUnlockBtn.addEventListener('click', attemptSiteUnlock);
-        if (sitePasskeyInput) {
-            sitePasskeyInput.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') attemptSiteUnlock();
-            });
-            sitePasskeyInput.focus();
+    function attemptSiteUnlock() {
+        const input = document.getElementById('site-passkey-input');
+        const errorEl = document.getElementById('site-lock-error');
+        const card = input ? input.closest('div.max-w-sm') : null;
+        if (!input) return;
+
+        const entered = normalizeKey(input.value);
+        const devKey = normalizeKey(CONFIG.passkeys.dev);
+        const prodKey = normalizeKey(CONFIG.passkeys.prod);
+
+        if (entered && entered === devKey) {
+            unlockSite('development');
+        } else if (entered && entered === prodKey) {
+            unlockSite('production');
+        } else {
+            playCRTBeep(220, 0.12);
+            if (errorEl) errorEl.classList.remove('hidden');
+            if (card) {
+                card.classList.remove('shake-error');
+                // force reflow so the animation can restart
+                void card.offsetWidth;
+                card.classList.add('shake-error');
+            }
+            input.value = '';
+            input.focus();
+        }
+    }
+
+    function initSiteLock() {
+        const overlay = document.getElementById('site-lock-overlay');
+        const input = document.getElementById('site-passkey-input');
+        const unlockBtn = document.getElementById('btn-site-unlock');
+
+        if (checkSiteUnlockedFromStorage()) {
+            if (overlay) overlay.classList.add('hidden');
+        } else if (overlay) {
+            overlay.classList.remove('hidden');
+            if (input) setTimeout(() => input.focus(), 100);
         }
 
-        // FIX: drive the clock every second instead of rendering it once.
+        if (unlockBtn) {
+            unlockBtn.addEventListener('click', attemptSiteUnlock);
+        }
+        if (input) {
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') attemptSiteUnlock();
+            });
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        // Load config.json first so every piece below (passkeys, video id,
+        // countdown targets, links) reads the real values.
+        await loadConfig();
+        configReady = true;
+        tryInitPlayer();
+
+        initSiteLock();
+
+        loadState();
+        renderPolaroids();
+
         updateCRTClock();
-        updateVideoCountdown();
+        clockIntervalId = setInterval(updateCRTClock, 1000);
+
+        updateVlogCountdown();
+        setInterval(updateVlogCountdown, 1000);
+
         updateNextDayOutCountdown();
-        clockIntervalId = setInterval(() => {
-            updateCRTClock();
-            updateVideoCountdown();
-            updateNextDayOutCountdown();
-        }, 1000);
+        setInterval(updateNextDayOutCountdown, 1000);
 
         // Tabs setup
         document.querySelectorAll('.crt-tab-btn').forEach(btn => {
@@ -1188,45 +1117,30 @@
             }
         });
 
-        // Local time / countdown modal
-        const clockButton = document.getElementById('crt-live-clock');
-        const timeModal = document.getElementById('time-info-modal');
-        const closeTimeModal = document.getElementById('close-time-info');
-
-        function openTimeInfoModal() {
-            playCRTBeep(750, 0.05);
-            if (timeModal) {
-                timeModal.classList.remove('hidden');
-                timeModal.classList.add('flex');
-            }
-            updateCRTClock();
-            updateVideoCountdown();
-            updateNextDayOutCountdown();
-        }
-
-        function closeTimeInfoModal() {
-            playCRTBeep(450, 0.04);
-            if (timeModal) {
-                timeModal.classList.add('hidden');
-                timeModal.classList.remove('flex');
-            }
-        }
-
-        if (clockButton) clockButton.addEventListener('click', openTimeInfoModal);
-        if (closeTimeModal) closeTimeModal.addEventListener('click', closeTimeInfoModal);
-
-        if (timeModal) {
-            timeModal.addEventListener('click', (e) => {
-                if (e.target === timeModal) closeTimeInfoModal();
-            });
-        }
+        // Overlay Unlock (manual override — the countdown will also auto-unlock)
+        const unlockBtn = document.getElementById('btn-unlock-overlay');
+        unlockBtn.addEventListener('click', () => {
+            state.isUnlocked = true;
+            localStorage.setItem('dayout_crt_unlocked', 'true');
+            playCRTBeep(1200, 0.1);
+            const overlay = document.getElementById('vlog-lock-overlay');
+            if (overlay) overlay.classList.add('hidden');
+            setTerminalMsg('SIGNAL ENCRYPTION BYPASSED SUCCESSFULLY.');
+        });
 
         // WhatsApp join button
         const waBtn = document.getElementById('btn-join-wa');
         waBtn.addEventListener('click', () => {
             playCRTBeep(950, 0.06);
             setTerminalMsg('REDIRECTING TO WHATSAPP CHANNEL...');
-            window.open(whatsappGroupLink, '_blank');
+            window.open(CONFIG.whatsapp.groupLink, '_blank');
+        });
+
+        // Clock click -> Next Day Out popup
+        document.getElementById('crt-clock-btn').addEventListener('click', openNextDayOutModal);
+        document.getElementById('close-nextdayout').addEventListener('click', closeNextDayOutModal);
+        document.getElementById('nextdayout-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'nextdayout-modal') closeNextDayOutModal();
         });
 
         // Lightbox listeners
