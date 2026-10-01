@@ -297,12 +297,10 @@
 
 <!-- =========================================================
      SITE LOCK OVERLAY
-     Blocks the entire page until a valid passkey is entered.
-     Two passkeys are supported (see SITE_PASSKEYS in the script
-     below) — one for development/testing and one for the real
-     release. This is a client-side gate, not real authentication:
-     anyone who views the page source can read the codes, so treat
-     it as a "keep casual visitors out" lock, not real security.
+     Blocks the entire page until a valid passkey is accepted by
+     the Cloudflare Worker authentication endpoint.
+     The passkeys themselves are NOT stored in this page or in
+     config.json.
      ========================================================= -->
 <div id="site-lock-overlay"
     class="fixed inset-0 z-[100] bg-[#050805] flex items-center justify-center p-4">
@@ -654,13 +652,18 @@
 <script>
     // =========================================================
     // CONFIG
-    // All editable settings are loaded from config.json.
-    // Keep config.json next to this HTML file and edit that file only
-    // when you need to change passkeys, video ID, countdowns, maps,
-    // or WhatsApp links.
+    // Public site settings are loaded from config.json.
+    // Passkeys are NEVER stored here. Authentication is handled
+    // by the Cloudflare Worker endpoint below.
     // =========================================================
+
+    // IMPORTANT:
+    // Replace this with your deployed Cloudflare Worker URL.
+    // Example:
+    // https://dayout-auth.example.workers.dev
+    const AUTH_ENDPOINT = 'https://YOUR-WORKER-NAME.YOUR-SUBDOMAIN.workers.dev';
+
     let CONFIG = {
-        passkeys: {},
         youtube: {},
         vlogCountdown: {},
         nextDayOut: {},
@@ -673,7 +676,6 @@
             if (res.ok) {
                 const data = await res.json();
                 CONFIG = {
-                    passkeys: { ...CONFIG.passkeys, ...(data.passkeys || {}) },
                     youtube: { ...CONFIG.youtube, ...(data.youtube || {}) },
                     vlogCountdown: { ...CONFIG.vlogCountdown, ...(data.vlogCountdown || {}) },
                     nextDayOut: { ...CONFIG.nextDayOut, ...(data.nextDayOut || {}) },
@@ -1052,31 +1054,75 @@
         setTerminalMsg(`SITE ACCESS GRANTED (${envLabel.toUpperCase()} KEY).`);
     }
 
-    function attemptSiteUnlock() {
+    async function attemptSiteUnlock() {
         const input = document.getElementById('site-passkey-input');
         const errorEl = document.getElementById('site-lock-error');
         const card = input ? input.closest('div.max-w-sm') : null;
+        const unlockBtn = document.getElementById('btn-site-unlock');
+
         if (!input) return;
 
         const entered = normalizeKey(input.value);
-        const devKey = normalizeKey(CONFIG.passkeys.dev);
-        const prodKey = normalizeKey(CONFIG.passkeys.prod);
+        if (!entered) return;
 
-        if (entered && entered === devKey) {
-            unlockSite('development');
-        } else if (entered && entered === prodKey) {
-            unlockSite('production');
-        } else {
+        // Prevent duplicate requests while authentication is in progress.
+        if (unlockBtn) {
+            unlockBtn.disabled = true;
+            unlockBtn.textContent = 'AUTHENTICATING...';
+        }
+
+        try {
+            const response = await fetch(AUTH_ENDPOINT, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    passkey: entered
+                })
+            });
+
+            const result = await response.json();
+
+            if (response.ok && result.ok === true) {
+                unlockSite(result.environment || 'production');
+                input.value = '';
+                return;
+            }
+
             playCRTBeep(220, 0.12);
             if (errorEl) errorEl.classList.remove('hidden');
+
             if (card) {
                 card.classList.remove('shake-error');
                 // force reflow so the animation can restart
                 void card.offsetWidth;
                 card.classList.add('shake-error');
             }
+
             input.value = '';
             input.focus();
+
+        } catch (e) {
+            console.error('Authentication request failed:', e);
+
+            playCRTBeep(220, 0.12);
+            if (errorEl) errorEl.classList.remove('hidden');
+
+            if (card) {
+                card.classList.remove('shake-error');
+                // force reflow so the animation can restart
+                void card.offsetWidth;
+                card.classList.add('shake-error');
+            }
+
+            input.value = '';
+            input.focus();
+        } finally {
+            if (unlockBtn) {
+                unlockBtn.disabled = false;
+                unlockBtn.textContent = 'Unlock Terminal';
+            }
         }
     }
 
@@ -1145,8 +1191,8 @@
     window.addEventListener('orientationchange', fitDesktopCRT, { passive: true });
 
     document.addEventListener('DOMContentLoaded', async () => {
-        // Load config.json first so every piece below (passkeys, video id,
-        // countdown targets, links) reads the real values.
+        // Load config.json first so the public video, countdown,
+        // location, and WhatsApp settings are ready before the UI starts.
         await loadConfig();
         configReady = true;
         tryInitPlayer();
