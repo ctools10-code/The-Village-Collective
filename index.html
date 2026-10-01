@@ -13,7 +13,7 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- YouTube IFrame API Script -->
+    
     <script src="https://www.youtube.com/iframe_api"></script>
 
     <style>
@@ -184,12 +184,7 @@
         }
 
 
-        /* =========================================================
-           DESKTOP CRT AUTO-FIT
-           Desktop: the complete CRT is scaled as one unit.
-           Mobile/tablet: the original responsive layout is restored
-           exactly by removing the wrapper's layout influence.
-           ========================================================= */
+
         #crt-fit-stage {
             width: 100%;
         }
@@ -227,7 +222,7 @@
             background: #00ff66;
         }
 
-        /* Restore the original mobile/tablet layout. */
+        
         @media (max-width: 1023px) {
             #crt-fit-stage {
                 display: contents;
@@ -295,13 +290,7 @@
 
 <body class="min-h-screen flex flex-col justify-between items-center p-2 sm:p-4 select-none">
 
-<!-- =========================================================
-     SITE LOCK OVERLAY
-     Blocks the entire page until a valid passkey is accepted by
-     the Cloudflare Worker authentication endpoint.
-     The passkeys themselves are NOT stored in this page or in
-     config.json.
-     ========================================================= -->
+
 <div id="site-lock-overlay"
     class="fixed inset-0 z-[100] bg-[#050805] flex items-center justify-center p-4">
     <div class="max-w-sm w-full bg-[#021006] border-2 border-[#00ff66] rounded-lg p-6 space-y-4 box-glow-green text-center">
@@ -335,7 +324,7 @@
 
 <div id="crt-fit-stage"><div id="crt-shell" class="w-full max-w-6xl mx-auto flex-1 flex flex-col my-auto">
 
-    <!-- Top Monitor Bezel Header -->
+
     <div class="bg-[#22252a] rounded-t-3xl border-t-4 border-x-4 border-[#333840] pt-3 pb-2 px-6 flex justify-between items-center shadow-2xl">
         <div class="flex items-center gap-2">
             <span class="w-3 h-3 rounded-full bg-red-600 inline-block border border-red-800"></span>
@@ -345,7 +334,7 @@
         </div>
 
         <div class="text-[10px] tracking-wider text-stone-500 font-mono hidden sm:block">
-            MULTISCAN // HIGH RESOLUTION PHOSPHOR DISPLAY
+            HIGH RESOLUTION PHOSPHOR DISPLAY
         </div>
 
         <div class="flex items-center gap-3">
@@ -365,22 +354,22 @@
         </div>
     </div>
 
-    <!-- Main Screen Frame -->
+
     <div class="relative bg-[#050805] border-4 border-[#1a1d21] rounded-b-2xl p-3 sm:p-6 crt-vignette overflow-hidden flex-1 flex flex-col min-h-[620px] shadow-2xl"
         id="crt-monitor-screen">
 
-        <!-- Scanline Overlay Layer -->
+        
         <div id="scanline-layer"
             class="crt-scanlines absolute inset-0 pointer-events-none z-30">
         </div>
 
-        <!-- Glass Glare Effect -->
+       
         <div class="crt-glass-glare absolute inset-0 pointer-events-none z-30"></div>
 
-        <!-- CRT Inner Content Container -->
+        
         <div class="crt-flicker-anim crt-power-on relative z-20 flex-1 flex flex-col justify-between space-y-4">
 
-            <!-- Screen Titlebar -->
+            
             <header class="border-b-2 border-[#005522] pb-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                 <div>
                     <div class="flex items-center gap-2">
@@ -390,7 +379,7 @@
                         </h1>
                     </div>
                     <p class="text-[11px] text-[#00a843] tracking-widest uppercase mt-0.5">
-                        SYS_VERSION: 2.86.0 // SIGNAL: STABLE // MODE: RECAP_OS
+                        SYS_VERSION: 2.86.0
                     </p>
                 </div>
 
@@ -402,7 +391,7 @@
                 </div>
             </header>
 
-            <!-- Navigation Tabs -->
+            
             <nav class="grid grid-cols-3 gap-2 bg-[#021006] p-1.5 rounded border border-[#00441b]">
                 <button data-tab="vlog"
                     class="crt-tab-btn active-tab py-2 sm:py-2.5 px-2 rounded text-xs sm:text-sm tracking-wider uppercase flex items-center justify-center gap-2 border border-[#00aa44]">
@@ -423,13 +412,13 @@
                 </button>
             </nav>
 
-            <!-- Tab Panels Area -->
+            
             <div class="flex-1 my-2">
 
-                <!-- VLOG Tab -->
+                
                 <section id="tab-vlog" class="tab-content space-y-4">
                     <div class="bg-[#021006] border border-[#005522] p-3 rounded-lg space-y-2">
-                        <!-- Manual Override / Auto-Sync Control Bar -->
+                       
                         <div class="flex justify-between items-center text-xs bg-[#010a04] px-3 py-1.5 rounded border border-[#003311]">
                             <span class="text-stone-400 flex items-center gap-1.5">
                                 <i class="fa-solid fa-sliders text-[#00ff66]"></i>
@@ -441,12 +430,12 @@
                             </button>
                         </div>
 
-                        <!-- YouTube Player Frame Container -->
+                        
                         <div class="aspect-video bg-[#010803] rounded border border-[#003311] overflow-hidden relative flex items-center justify-center">
-                            <!-- YouTube API Mount Target -->
+                           >
                             <div id="youtube-player" class="w-full h-full"></div>
 
-                            <!-- Encryption Overlay Lock -->
+                           
                             <div id="vlog-lock-overlay"
                                 class="absolute inset-0 bg-[#020d05]/95 backdrop-blur-sm flex flex-col items-center justify-center p-4 text-center z-20 space-y-3 border-2 border-amber-500/50">
                                 <div class="w-12 h-12 rounded-full bg-amber-500/20 border border-amber-500 text-amber-400 flex items-center justify-center text-xl box-glow-amber">
@@ -466,15 +455,15 @@
                     </div>
                 </section>
 
-                <!-- PHOTOS Tab -->
+               
                 <section id="tab-photos" class="tab-content hidden space-y-4">
                     <div class="bg-[#021408] border border-[#005522] p-3 rounded-lg flex flex-col sm:flex-row items-center justify-between gap-3">
                         <div>
                             <h2 class="text-xl font-crt-title text-[#00ff66] text-glow-green">
-                                POLAROID_ARCHIVE // SNAPSHOTS
+                                POLAROID_ARCHIVE
                             </h2>
                             <p class="text-xs text-[#00aa44]">
-                                Upload trip memories. Images are auto-compressed & saved to browser memory.
+                                
                             </p>
                         </div>
                         <div class="text-xs bg-[#05200c] border border-[#006622] px-3 py-1.5 rounded text-[#00ff66]">
@@ -492,7 +481,7 @@
                     </div>
                 </section>
 
-                <!-- WhatsApp Tab -->
+               
                 <section id="tab-whatsapp" class="tab-content hidden space-y-4">
                     <div class="max-w-xl mx-auto bg-[#021408] border-2 border-[#00aa44] p-5 sm:p-6 rounded-lg box-glow-green text-center space-y-5">
                         <div class="w-16 h-16 rounded-2xl bg-[#00220d] border-2 border-[#00ff66] text-[#00ff66] flex items-center justify-center mx-auto text-3xl box-glow-green">
@@ -521,7 +510,6 @@
 
             </div>
 
-            <!-- Terminal / Status Footer -->
             <footer class="border-t border-[#00441b] pt-2 flex flex-col sm:flex-row justify-between items-center text-[10px] text-[#00a843] gap-1">
                 <div>
                     <span>STATUS: ONLINE</span> |
@@ -536,7 +524,7 @@
         </div>
     </div>
 
-    <!-- Bottom Monitor Bezel Footer & Power Control -->
+  
     <div class="bg-[#1c1f24] rounded-b-3xl border-b-4 border-x-4 border-[#333840] p-4 flex justify-between items-center shadow-2xl">
         <div class="flex gap-1.5">
             <span class="w-1.5 h-6 bg-[#121417] rounded-sm"></span>
@@ -564,7 +552,7 @@
 
 </div></div>
 
-<!-- Polaroid Lightbox Modal -->
+
 <div id="lightbox-modal"
     class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4">
     <div class="bg-[#051208] border-2 border-[#00ff66] rounded-lg max-w-md w-full p-4 space-y-4 relative box-glow-green">
@@ -617,7 +605,7 @@
     </div>
 </div>
 
-<!-- Next Day Out Countdown Modal (opens on clicking the clock) -->
+
 <div id="nextdayout-modal"
     class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4">
     <div class="bg-[#051208] border-2 border-[#00ff66] rounded-lg max-w-md w-full p-5 space-y-4 relative box-glow-green text-center">
@@ -650,17 +638,7 @@
 </div>
 
 <script>
-    // =========================================================
-    // CONFIG
-    // Public site settings are loaded from config.json.
-    // Passkeys are NEVER stored here. Authentication is handled
-    // by the Cloudflare Worker endpoint below.
-    // =========================================================
 
-    // IMPORTANT:
-    // Replace this with your deployed Cloudflare Worker URL.
-    // Example:
-    // https://dayout-auth.example.workers.dev
     const AUTH_ENDPOINT = 'https://dayout-auth.ctools1-0.workers.dev';
 
     let CONFIG = {
@@ -683,8 +661,7 @@
                 };
             }
         } catch (e) {
-            // config.json missing or unreadable (e.g. opened via file:// without
-            // it alongside) — CONFIG keeps the built-in fallback values above.
+        
             console.warn('config.json not found or unreadable, using built-in fallback config.', e);
         }
     }
@@ -732,7 +709,7 @@
     let ytApiReady = false;
     let configReady = false;
 
-    // YouTube IFrame API Callback
+ 
     function onYouTubeIframeAPIReady() {
         ytApiReady = true;
         tryInitPlayer();
@@ -820,8 +797,7 @@
         clockEl.textContent = `${time} LOCAL`;
     }
 
-    // Live countdown to CONFIG.vlogCountdown.target. Auto-unlocks the vlog
-    // overlay the moment the countdown hits zero — no click needed.
+
     function updateVlogCountdown() {
         const display = document.getElementById('vlog-countdown-display');
         const overlay = document.getElementById('vlog-lock-overlay');
@@ -850,7 +826,7 @@
         display.textContent = `${days}D ${pad2(hours)}H ${pad2(mins)}M ${pad2(secs)}S`;
     }
 
-    // Live countdown to CONFIG.nextDayOut.target, shown inside the clock's popup.
+  
     function updateNextDayOutCountdown() {
         const display = document.getElementById('nextdayout-countdown');
         if (!display) return;
@@ -1025,9 +1001,7 @@
         state.activeInspectId = null;
     }
 
-    // =========================================================
-    // SITE LOCK — full-page passkey gate
-    // =========================================================
+
     function normalizeKey(v) {
         return (v || '').trim().toLowerCase();
     }
@@ -1065,7 +1039,7 @@
         const entered = normalizeKey(input.value);
         if (!entered) return;
 
-        // Prevent duplicate requests while authentication is in progress.
+       
         if (unlockBtn) {
             unlockBtn.disabled = true;
             unlockBtn.textContent = 'AUTHENTICATING...';
@@ -1150,12 +1124,6 @@
 
 
 
-    /* =========================================================
-       DESKTOP CRT AUTO-FIT
-       Reference size is the CRT composition shown in the design:
-       864 x 833. We scale the entire CRT uniformly so no internal
-       element is redesigned, stretched independently, or clipped.
-       ========================================================= */
     function fitDesktopCRT() {
         const stage = document.getElementById('crt-fit-stage');
         const shell = document.getElementById('crt-shell');
@@ -1352,8 +1320,7 @@
             closeLightbox();
         });
 
-        // Fit the complete CRT once the DOM is ready. Resize/orientation
-        // listeners are registered outside this handler.
+
         fitDesktopCRT();
     });
 </script>
