@@ -723,9 +723,9 @@
 
         if (!container || !videoId) return;
 
-        // The YouTube API can load at different times on a normal refresh.
-        // Use the API when ready; otherwise use a normal YouTube iframe so
-        // the video is never left blank because of API timing.
+        // Prefer the YouTube IFrame API because onStateChange is required
+        // for AUTO-SYNC SCANLINES. On a normal refresh the API may arrive
+        // slightly later, so keep retrying instead of locking in a plain iframe.
         if (ytApiReady && window.YT && typeof YT.Player === 'function') {
             try {
                 ytPlayer = new YT.Player('youtube-player', {
@@ -743,26 +743,28 @@
                 });
                 return;
             } catch (e) {
-                console.warn('YouTube API initialization failed; using iframe fallback.', e);
+                console.warn('YouTube API initialization failed; retrying...', e);
             }
         }
 
-        const iframe = document.createElement('iframe');
-        iframe.width = '100%';
-        iframe.height = '100%';
-        iframe.src =
-            'https://www.youtube.com/embed/' +
-            encodeURIComponent(videoId) +
-            '?playsinline=1&modestbranding=1&rel=0';
-        iframe.title = 'DAY OUT VLOG';
-        iframe.frameBorder = '0';
-        iframe.allow =
-            'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
-        iframe.allowFullscreen = true;
-        iframe.style.display = 'block';
-
-        container.replaceChildren(iframe);
-        ytPlayer = iframe;
+        // Temporary fallback only. Do NOT assign it to ytPlayer, because that
+        // would prevent the YouTube API from taking over on a later retry.
+        if (!container.querySelector('iframe')) {
+            const iframe = document.createElement('iframe');
+            iframe.width = '100%';
+            iframe.height = '100%';
+            iframe.src =
+                'https://www.youtube.com/embed/' +
+                encodeURIComponent(videoId) +
+                '?playsinline=1&modestbranding=1&rel=0';
+            iframe.title = 'DAY OUT VLOG';
+            iframe.frameBorder = '0';
+            iframe.allow =
+                'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+            iframe.allowFullscreen = true;
+            iframe.style.display = 'block';
+            container.replaceChildren(iframe);
+        }
     }
 
     function onPlayerStateChange(event) {
@@ -1205,6 +1207,8 @@
         tryInitPlayer();
         setTimeout(tryInitPlayer, 500);
         setTimeout(tryInitPlayer, 1500);
+        setTimeout(tryInitPlayer, 3000);
+        setTimeout(tryInitPlayer, 5000);
 
         updateCRTClock();
         clockIntervalId = setInterval(updateCRTClock, 1000);
