@@ -14,6 +14,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     
+    <link rel="preconnect" href="https://www.youtube.com">
+    <link rel="preconnect" href="https://www.google.com">
     <script src="https://www.youtube.com/iframe_api"></script>
 
     <style>
@@ -708,6 +710,7 @@
     let clockIntervalId = null;
     let ytApiReady = false;
     let configReady = false;
+    let vlogRefreshTriggered = false;
 
  
     function onYouTubeIframeAPIReady() {
@@ -798,6 +801,27 @@
     }
 
 
+    function refreshAfterVlogUnlock() {
+        if (vlogRefreshTriggered) return;
+        vlogRefreshTriggered = true;
+
+        // Prevent a refresh loop while this browser session is already unlocked.
+        const refreshKey = 'dayout_vlog_hard_refresh';
+        try {
+            if (sessionStorage.getItem(refreshKey) === 'true') {
+                return;
+            }
+            sessionStorage.setItem(refreshKey, 'true');
+        } catch (e) {}
+
+        // Cache-bust the document request to approximate Ctrl+Shift+R behavior.
+        setTimeout(() => {
+            const url = new URL(window.location.href);
+            url.searchParams.set('_vlog_refresh', Date.now().toString());
+            window.location.replace(url.toString());
+        }, 700);
+    }
+
     function updateVlogCountdown() {
         const display = document.getElementById('vlog-countdown-display');
         const overlay = document.getElementById('vlog-lock-overlay');
@@ -815,7 +839,8 @@
             state.isUnlocked = true;
             try { localStorage.setItem('dayout_crt_unlocked', 'true'); } catch (e) {}
             overlay.classList.add('hidden');
-            setTerminalMsg('COUNTDOWN COMPLETE: VLOG SIGNAL AUTO-DECRYPTED.');
+            setTerminalMsg('COUNTDOWN COMPLETE: VLOG SIGNAL AUTO-DECRYPTED. RELOADING...');
+            refreshAfterVlogUnlock();
             return;
         }
 
@@ -1159,6 +1184,19 @@
     window.addEventListener('orientationchange', fitDesktopCRT, { passive: true });
 
     document.addEventListener('DOMContentLoaded', async () => {
+        // Remove the temporary cache-busting marker from the visible URL.
+        try {
+            const cleanUrl = new URL(window.location.href);
+            if (cleanUrl.searchParams.has('_vlog_refresh')) {
+                cleanUrl.searchParams.delete('_vlog_refresh');
+                window.history.replaceState(
+                    null,
+                    '',
+                    cleanUrl.pathname + cleanUrl.search + cleanUrl.hash
+                );
+            }
+        } catch (e) {}
+
         // Load config.json first so the public video, countdown,
         // location, and WhatsApp settings are ready before the UI starts.
         await loadConfig();
